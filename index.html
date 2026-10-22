@@ -431,7 +431,7 @@
       letter-spacing: 0.3px;
     }
 
-    /* Kart İçi 2 Akıllı Aksiyon Butonu (Mutfak & Tüm Faydaları) */
+    /* Kart İçi Aksiyon Butonları (Mutfak & Tüm Faydaları) */
     .card-action-bar {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -439,6 +439,10 @@
       margin-top: 12px;
       padding-top: 10px;
       border-top: 1px solid var(--border);
+    }
+
+    .card-action-bar.single-action {
+      grid-template-columns: 1fr;
     }
 
     .action-toggle-btn {
@@ -2025,7 +2029,7 @@
       },
       {
         id: "konserve_sardalya",
-        name: "Zeytinyağlı Sardalya / Uskumru Фиleto (Cam Kavanoz / Kutu)",
+        name: "Zeytinyağlı Sardalya / Uskumru Fileto (Cam Kavanoz / Kutu)",
         category: "⚡ Hazır & Pratik",
         tier: 1,
         score: 94,
@@ -2370,14 +2374,14 @@
         const isOpen = kitchenDrawer.classList.contains("open");
         kitchenDrawer.classList.toggle("open", !isOpen);
         kitchenBtn.classList.toggle("active-kitchen", !isOpen);
-        benefitsDrawer.classList.remove("open");
-        benefitsBtn.classList.remove("active-benefits");
-      } else {
+        if (benefitsDrawer) benefitsDrawer.classList.remove("open");
+        if (benefitsBtn) benefitsBtn.classList.remove("active-benefits");
+      } else if (benefitsDrawer && benefitsBtn) {
         const isOpen = benefitsDrawer.classList.contains("open");
         benefitsDrawer.classList.toggle("open", !isOpen);
         benefitsBtn.classList.toggle("active-benefits", !isOpen);
-        kitchenDrawer.classList.remove("open");
-        kitchenBtn.classList.remove("active-kitchen");
+        if (kitchenDrawer) kitchenDrawer.classList.remove("open");
+        if (kitchenBtn) kitchenBtn.classList.remove("active-kitchen");
       }
     };
 
@@ -2509,26 +2513,32 @@
             ⚖️ <strong>6 Kısıt Notu:</strong> ${item.constraintNote}
           </div>
 
-          <!-- Küçük Etken Madde Etiketleri -->
-          <div class="tags-row">
-            ${item.molecules.map(m => `<span class="compound-tag" onclick="jumpToMoleculeTab('${m}')">🧪 ${m}</span>`).join("")}
-          </div>
+          ${!isForbidden ? `
+            <!-- Küçük Etken Madde Etiketleri (Sadece Sağlıklı Gıdalarda) -->
+            <div class="tags-row">
+              ${item.molecules.map(m => `<span class="compound-tag" onclick="jumpToMoleculeTab('${m}')">🧪 ${m}</span>`).join("")}
+            </div>
+          ` : ''}
 
-          <!-- 2 Akıllı Aksiyon Butonu -->
-          <div class="card-action-bar">
+          <!-- Akıllı Aksiyon Butonları (Yasaklı Gıdalarda Tek Buton, Sağlıklı Gıdalarda 2 Buton) -->
+          <div class="card-action-bar ${isForbidden ? 'single-action' : ''}">
             <button class="action-toggle-btn" id="btn-kitchen-${item.id}" onclick="toggleDrawer('${item.id}', 'kitchen')">
               ${isForbidden ? '🔄 Sağlıklı Alternatifi' : '🍽️ Mutfak & Tüketim'}
             </button>
-            <button class="action-toggle-btn" id="btn-benefits-${item.id}" onclick="toggleDrawer('${item.id}', 'benefits')">
-              🧬 İlgili Moleküller (${item.molecules.length})
-            </button>
+            ${!isForbidden ? `
+              <button class="action-toggle-btn" id="btn-benefits-${item.id}" onclick="toggleDrawer('${item.id}', 'benefits')">
+                🧬 Tüm Faydaları (${item.molecules.length})
+              </button>
+            ` : ''}
           </div>
 
-          <!-- Açılır Çekmece 1: Mutfak & Emilim Kuralları -->
+          <!-- Açılır Çekmece 1: Mutfak & Emilim Kuralları / Sağlıklı Alternatif -->
           <div class="inline-drawer" id="drawer-kitchen-${item.id}">
             <div class="multiplier-badge">🚀 ${item.multiplierBadge}</div>
             <div class="info-box box-right" style="margin-top:4px;">
-              <span class="box-label" style="color:var(--primary);">✅ Doğru Hazırlama, Pişirme, Eşleştirme & Zamanlama</span>
+              <span class="box-label" style="color:var(--primary);">
+                ${isForbidden ? '✅ Sağlıklı Ev Alternatifi & Uygulama' : '✅ Doğru Hazırlama, Pişirme, Eşleştirme & Zamanlama'}
+              </span>
               ${item.rightMethod.replace(/\n/g, "<br>")}
             </div>
             <div class="info-box box-wrong">
@@ -2541,13 +2551,15 @@
             </div>
           </div>
 
-          <!-- Açılır Çekmece 2: Tüm Faydaları ve Vücut Sistemleri -->
-          <div class="inline-drawer" id="drawer-benefits-${item.id}">
-            <div style="font-size:0.8rem; font-weight:800; color:var(--info); margin-bottom:8px;">
-              🩺 HEDEF VÜCUT SİSTEMLERİ: ${item.systems.join(" • ")}
+          ${!isForbidden ? `
+            <!-- Açılır Çekmece 2: Tüm Faydaları ve Vücut Sistemleri -->
+            <div class="inline-drawer" id="drawer-benefits-${item.id}">
+              <div style="font-size:0.8rem; font-weight:800; color:var(--info); margin-bottom:8px;">
+                🩺 HEDEF VÜCUT SİSTEMLERİ: ${item.systems.join(" • ")}
+              </div>
+              ${detailedBenefitsHTML}
             </div>
-            ${detailedBenefitsHTML}
-          </div>
+          ` : ''}
         </div>
       `;
     }
