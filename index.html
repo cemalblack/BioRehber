@@ -245,6 +245,13 @@
       color: var(--text);
     }
 
+    .tier-4 {
+      background: rgba(239, 68, 68, 0.16);
+      border: 1px solid var(--danger);
+      border-left: 5px solid var(--danger);
+      color: var(--text);
+    }
+
     .section-banner {
       background: var(--bg-card-alt);
       border-left: 4px solid var(--primary);
@@ -334,6 +341,17 @@
       background: rgba(245, 158, 11, 0.18);
       color: var(--accent);
       border: 1px solid var(--accent);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .forbidden-badge {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      border: 1px solid var(--danger);
       font-size: 0.72rem;
       font-weight: 800;
       padding: 2px 7px;
@@ -682,7 +700,7 @@
 </head>
 <body>
 
-  <!-- Üst Bar ("6 Kriter" kutucuğu kaldırıldı) -->
+  <!-- Üst Bar -->
   <header>
     <div class="header-top">
       <div class="brand">
@@ -696,7 +714,7 @@
       </div>
     </div>
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Gıda, vitamin, özel molekül veya organ ara... (Örn: makarna, yulaf, enginar)" />
+      <input type="text" id="searchInput" placeholder="Gıda, vitamin, molekül veya yasaklı ürün ara... (Örn: nutella, pancar, zeytin, kefir)" />
       <button class="clear-search" id="clearSearchBtn">✕</button>
     </div>
   </header>
@@ -745,50 +763,50 @@
         name: "C Vitamini",
         group: "Vitaminler",
         role: "Damar, cilt ve eklem kolajeninin üretimi, bağışıklık hücresi aktivasyonu ve bitkisel demirin bağırsaktan yakalanıp (şelatlanıp) emilmesi için zorunludur.",
-        tip: "Isıya duyarlıdır; günde 1 çiğ kapya biber (%200 ihtiyaç) veya kivi/mandalina ile fazlasıyla kapanır.",
-        rankedSources: ["kapya_biber", "kivi", "mandalina_albedo", "mor_lahana", "brokoli_karnabahar", "cilek", "nar", "patates", "armut"]
+        tip: "Isıya duyarlıdır; günde 1 çiğ kapya biber (%200 ihtiyaç), kivi, mandalina veya limon ile fazlasıyla kapanır.",
+        rankedSources: ["kapya_biber", "kivi", "mandalina_albedo", "limon", "mor_lahana", "beyaz_lahana", "maydanoz", "brokoli_karnabahar", "cilek", "nar", "patates", "armut"]
       },
       {
         name: "D Vitamini",
         group: "Vitaminler",
         role: "Kalsiyum emilimi, kemik mineralizasyonu ve 200'den fazla bağışıklık geninin yönetimini sağlar.",
         tip: "Sebze ve meyvelerde bulunmaz. Güneş ışığı, yağlı küçük deniz balıkları (sardalya/uskumru), yumurta sarısı ve güneşte bekletilmiş mantardan alınır.",
-        rankedSources: ["sardalya_hamsi_uskumru", "yumurta", "mantar"]
+        rankedSources: ["sardalya_hamsi_uskumru", "konserve_sardalya", "yumurta", "mantar"]
       },
       {
         name: "E Vitamini",
         group: "Vitaminler",
         role: "Hücre zarlarındaki yağ tabakasını, beyni ve damarlardaki kolesterolü paslanmaya (oksidasyona) karşı koruyan ana yağ kalkanıdır.",
-        tip: "Sıvı yağ içerek alınamaz (kalori kısıtı). 1 avuç çiğ ayçekirdeği içi veya çiğ fındık günlük ihtiyacın %70'ini tek hamlede verir.",
-        rankedSources: ["kabak_aycekirdegi", "findik_badem_fistik", "tahin", "brezilya_cevizi"]
+        tip: "1 avuç çiğ ayçekirdeği içi ve çiğ fındık günlük ihtiyacın %70-80'ini tek hamlede verir; soğuk sıkım zeytinyağı ile desteklenir.",
+        rankedSources: ["kabak_aycekirdegi", "cig_findik", "sekersiz_findik_ezmesi", "zeytin_zeytinyagi", "tahin", "findik_badem_fistik", "brezilya_cevizi"]
       },
       {
         name: "K1 & K2 Vitamini",
         group: "Vitaminler",
         role: "K1 kanın normal pıhtılaşmasını sağlar; K2 (Menakinon) ise kalsiyumu damar duvarlarından uzaklaştırıp doğrudan kemiklere ve dişlere çiviler.",
-        tip: "K2 sadece fermente olgun peynir ve ev yoğurdunda; K1 ise roka, mor lahana ve pazıda en pratik şekilde bulunur.",
-        rankedSources: ["yogurt_kefir_peynir", "roka_tere", "mor_lahana", "pazi_ispanak", "kereviz", "brokoli_karnabahar"]
+        tip: "K2 sadece fermente olgun peynir, kefir ve ev yoğurdunda; K1 ise maydanoz (10 dalı %150 verir), roka, mor lahana ve pazıda bulunur.",
+        rankedSources: ["yogurt_kefir_peynir", "kefir", "maydanoz", "roka_tere", "mor_lahana", "pazi_ispanak", "beyaz_lahana", "pirasa", "kereviz", "brokoli_karnabahar"]
       },
       {
         name: "Folat (B9)",
         group: "Vitaminler",
         role: "DNA sentezi, yeni kan hücresi üretimi ve damar duvarını yaralayan toksik 'Homosistein' amino asidinin temizlenmesi için şarttır.",
-        tip: "Mercimek, nohut ve bulgur pişse bile folatını korur; roka ve tere ise en pratik çiğ folat kaynağıdır.",
-        rankedSources: ["mercimek_nohut", "roka_tere", "kirmizi_pancar", "bulgur", "enginar", "ceviz", "brokoli_karnabahar", "kuru_fasulye_barbunya"]
+        tip: "Mercimek, nohut ve bulgur pişse bile folatını korur; roka, tere ve maydanoz ise en pratik çiğ folat kaynağıdır.",
+        rankedSources: ["mercimek_nohut", "kavanoz_bakliyat_sebze", "roka_tere", "kirmizi_pancar", "bulgur", "maydanoz", "enginar", "pirasa", "ceviz", "brokoli_karnabahar", "kuru_fasulye_barbunya"]
       },
       {
         name: "B12 & B Grubu (B1/B6)",
         group: "Vitaminler",
         role: "Sinir kılıflarının (miyelin) korunması, kırmızı kan hücresi üretimi, karbonhidratların enerjiye dönüşmesi (B1/B6) ve beyin kimyasalları için zorunludur.",
-        tip: "B12 sadece hayvansal gıdalarda (ciğer, balık, yumurta, lor); B1 ve B6 ise bulgur, yulaf, patates, balık ve ette yüksektir.",
-        rankedSources: ["ciger_kemik_suyu", "sardalya_hamsi_uskumru", "yumurta", "tatli_lor_suzme", "kirmizi_et_kiyma", "tavuk_kalca_hindi", "bulgur", "yulaf_ezmesi", "patates", "durum_makarna", "mantar", "eksi_maya_ekmek", "muz"]
+        tip: "B12 sadece hayvansal gıdalarda (ciğer, balık, yumurta, lor, kefir); B1 ve B6 ise bulgur, yulaf, patates, balık ve ette yüksektir.",
+        rankedSources: ["ciger_kemik_suyu", "sardalya_hamsi_uskumru", "konserve_sardalya", "yumurta", "tatli_lor_suzme", "kefir", "kirmizi_et_kiyma", "tavuk_kalca_hindi", "bulgur", "yulaf_ezmesi", "patates", "durum_makarna", "mantar", "eksi_maya_ekmek", "muz"]
       },
       {
         name: "A Vitamini (Retinol & Beta-Karoten)",
         group: "Vitaminler",
         role: "Gece görüşü, göz retinası, mukozaların (bağırsak ve solunum duvarı) sağlamlığı ve cilt yenilenmesini yönetir.",
-        tip: "Doğrudan aktif Retinol ciğer ve yumurta sarısında; bitkisel Beta-Karoten ise kapya biber ve mor havuçta (yağ ile eşleştirilerek) bulunur.",
-        rankedSources: ["ciger_kemik_suyu", "yumurta", "kapya_biber", "mor_havuc_turp"]
+        tip: "Doğrudan aktif Retinol ciğer ve yumurta sarısında; bitkisel Beta-Karoten ise kapya biber, mor havuç ve maydanozda (yağ ile eşleştirilerek) bulunur.",
+        rankedSources: ["ciger_kemik_suyu", "yumurta", "kapya_biber", "mor_havuc_turp", "maydanoz"]
       },
 
       // ==================== MİNERALLER ====================
@@ -797,7 +815,7 @@
         group: "Mineraller",
         role: "Vücuttaki 300'den fazla enzimin anahtarıdır. Damarları ve kasları gevşetir, krampları önler, sinir sistemini sakinleştirir ve derin uykuyu destekler.",
         tip: "Çiğ salata ile doldurulamaz (hacim kısıtı). 1 avuç çiğ kabak çekirdeği içi (155mg) + pişmiş pazı/ıspanak ve mercimek/bulgur ile kolayca alınır.",
-        rankedSources: ["kabak_aycekirdegi", "pazi_ispanak", "mercimek_nohut", "bulgur", "yulaf_ezmesi", "karabugday", "ceviz", "dogal_kakao", "findik_badem_fistik", "enginar", "kuru_fasulye_barbunya", "brezilya_cevizi", "eksi_maya_ekmek"]
+        rankedSources: ["kabak_aycekirdegi", "pazi_ispanak", "mercimek_nohut", "bulgur", "yulaf_ezmesi", "karabugday", "cig_findik", "sekersiz_findik_ezmesi", "ceviz", "dogal_kakao", "findik_badem_fistik", "enginar", "kuru_fasulye_barbunya", "brezilya_cevizi", "eksi_maya_ekmek"]
       },
       {
         name: "Potasyum",
@@ -824,18 +842,53 @@
         name: "Kalsiyum",
         group: "Mineraller",
         role: "Kemik ve diş çatısını oluşturur, kasların kasılmasını ve sinir iletimini sağlar.",
-        tip: "Tatlı lor, süzme yoğurt, olgun peynir ve tahin porsiyon başına en yüksek biyoyararlanımlı kaynaklardır.",
-        rankedSources: ["tatli_lor_suzme", "yogurt_kefir_peynir", "tahin", "yas_incir"]
+        tip: "Tatlı lor, süzme yoğurt, kefir, olgun peynir, kılçıklı sardalya ve tahin porsiyon başına en yüksek biyoyararlanımlı kaynaklardır.",
+        rankedSources: ["tatli_lor_suzme", "yogurt_kefir_peynir", "kefir", "konserve_sardalya", "tahin", "yas_incir"]
       },
       {
         name: "Selenyum & İyot",
         group: "Mineraller",
         role: "Tiroid hormonlarının (T3/T4) üretilmesi ve vücudun baş antioksidan enzimi olan Glutatyon Peroksidaz'ın çalışması için zorunludur.",
         tip: "Günde sadece 1-2 adet Brezilya cevizi veya haftada 2 kez deniz balığı ile %100 karşılanır.",
-        rankedSources: ["brezilya_cevizi", "sardalya_hamsi_uskumru", "durum_makarna", "mantar", "eksi_maya_ekmek"]
+        rankedSources: ["brezilya_cevizi", "sardalya_hamsi_uskumru", "konserve_sardalya", "durum_makarna", "mantar", "eksi_maya_ekmek"]
       },
 
       // ==================== ÖZEL MOLEKÜLLER & FLAVONOİDLER ====================
+      {
+        name: "Oleuropein & Oleokantal",
+        group: "Özel Moleküller",
+        role: "Zeytin ve soğuk sıkım sızma zeytinyağına özgüdür. Damar iç yüzeyini (endotel) onarır, LDL kolesterolün damara yapışmasını önler; Oleokantal ise boğazda hafif yanma yaparak vücutta tıpkı ağrı kesici (İbuprofen) gibi kronik iltihabı söndürür.",
+        tip: "Sadece gerçek Soğuk Sıkım Sızma Zeytinyağında ve boyasız doğal (özellikle kırma yeşil/mor) zeytinde bulunur.",
+        rankedSources: ["zeytin_zeytinyagi"]
+      },
+      {
+        name: "Sitrik Asit & D-Limonen",
+        group: "Özel Moleküller",
+        role: "Sitrik asit idrardaki kalsiyumu bağlayarak böbrek taşı oluşumunu önleyen #1 doğal moleküldür ve bitkisel demir/kalsiyum emilimini 4 kat açar. Limon kabuğundaki D-Limonen ise karaciğer detoks enzimlerini çalıştırır ve safra taşlarını çözer.",
+        tip: "Limon suyunda (Sitrik asit) ve limonun sarı dış kabuğunda (D-Limonen) bulunur; yemek ılındığında sıkılmalı ve sarı kabuğu rendelenmelidir.",
+        rankedSources: ["limon", "mandalina_albedo"]
+      },
+      {
+        name: "U Vitamini (S-Metilmetiyonin)",
+        group: "Özel Moleküller",
+        role: "Mide ve onikiparmak bağırsağının iç mukozasını doğrudan onaran, gastrit, reflü ve ülser yaralarının iyileşmesini hızlandıran nadir bir kükürtlü amino asit türevidir.",
+        tip: "Açık ara en yüksek oranda ÇİĞ BEYAZ LAHANADA (ve ev yapımı lahana turşusunda) bulunur; uzun kaynatılırsa bozulur.",
+        rankedSources: ["beyaz_lahana", "mor_lahana"]
+      },
+      {
+        name: "Kefiran & Canlı Probiyotik",
+        group: "Özel Moleküller",
+        role: "Bağırsak duvarına kalıcı olarak yerleşip (kolonize olup) zararlı bakterileri kovan, serotonin/GABA üretimini destekleyen ve bağışıklık sistemini eğiten canlı mikroorganizmalar ve kefiran polisakkaritidir.",
+        tip: "Sade kefir (30+ bakteri/maya suşu), ev yapımı lahana turşusu ve ev yoğurdunda bulunur.",
+        rankedSources: ["kefir", "yogurt_kefir_peynir", "beyaz_lahana"]
+      },
+      {
+        name: "Kaempferol & İnülin",
+        group: "Özel Moleküller",
+        role: "Kaempferol damar sertliğini ve hücresel DNA hasarını önleyen güçlü bir flavonoiddir; İnülin ise kalın bağırsaktaki faydalı Bifidobakterilerin en sevdiği prebiyotik liftir.",
+        tip: "Pırasada (özellikle koyu yeşil yapraklarında) ve enginarda yoğun bulunur.",
+        rankedSources: ["pirasa", "enginar", "sarimsak_mor_sogan"]
+      },
       {
         name: "Avenantramid & Beta-Glukan",
         group: "Özel Moleküller",
@@ -855,14 +908,14 @@
         group: "Özel Moleküller",
         role: "İnce bağırsakta şekere dönüşmeden kalın bağırsağa ulaşır; faydalı bakteriler bunları yiyerek bağırsak duvarını onaran ve iltihabı söndüren 'Bütirat' (kısa zincirli yağ asidi) üretir.",
         tip: "Pektin için ayva, elma kabuğu ve mandalina beyaz lifi; Dirençli Nişasta içinse pişirilip SOĞUTULMUŞ mercimek, patates, bulgur ve makarna şampiyonlardır.",
-        rankedSources: ["ayva", "elma_kabuklu", "mandalina_albedo", "mercimek_nohut", "patates", "bulgur", "durum_makarna", "yulaf_ezmesi", "enginar", "kivi", "kuru_fasulye_barbunya", "muz", "armut", "eksi_maya_ekmek", "patlican_kabak_bamya", "beyaz_pirinc"]
+        rankedSources: ["ayva", "elma_kabuklu", "mandalina_albedo", "mercimek_nohut", "patates", "bulgur", "durum_makarna", "yulaf_ezmesi", "leblebi_cavdar_gevregi", "enginar", "kivi", "kuru_fasulye_barbunya", "muz", "armut", "eksi_maya_ekmek", "patlican_kabak_bamya", "beyaz_pirinc"]
       },
       {
         name: "Sinarin & Silimarin",
         group: "Özel Moleküller",
         role: "Karaciğerin safra üretimini ve safra kesesinin boşalmasını doğrudan uyarır; karaciğer yağlanmasını temizler ve kolesterol sentezini dengeler.",
         tip: "İkamesiz olarak ENGİNARDA bulunur. Sinarin'in %80'i çanakta değil, enginarın yeşil yapraklarındadır!",
-        rankedSources: ["enginar"]
+        rankedSources: ["enginar", "kavanoz_bakliyat_sebze"]
       },
       {
         name: "Ergotiyonein",
@@ -874,15 +927,15 @@
       {
         name: "Apigenin & Ftalidler (3nB)",
         group: "Özel Moleküller",
-        role: "Ftalidler (3nB) damar düz kaslarını gevşetip stres kaynaklı tansiyonu düşürür. Apigenin ise beyinde sakinleşme/uyku sağlar ve yaşlanma enzimi CD38'i baskılar.",
-        tip: "Kerevizin yumrusunda, yeşil sap/yapraklarında ve kuru kekikte yoğun bulunur.",
-        rankedSources: ["kereviz", "kekik_biberiye"]
+        role: "Ftalidler (3nB) damar düz kaslarını gevşetip stres kaynaklı tansiyonu düşürür. Apigenin ise beyinde sakinleşme/uyku sağlar, ödem atar ve yaşlanma enzimi CD38'i baskılar.",
+        tip: "Maydanoz, kerevizin yumrusu/yeşil yaprakları ve kuru kekikte yoğun bulunur.",
+        rankedSources: ["maydanoz", "kereviz", "kekik_biberiye"]
       },
       {
         name: "Betain (TMG) & Doğal Nitrat",
         group: "Özel Moleküller",
         role: "Betain karaciğer yağlanmasını ve damar yaralayıcı homosisteini temizler. Doğal nitrat ise damarlarda Nitrik Oksit üreterek tansiyonu düşürür.",
-        tip: "Kırmızı pancar, roka ve tam buğday bulgurunda yoğun bulunur.",
+        tip: "Çiğ rendelenmiş kırmızı pancar, roka ve tam buğday bulgurunda yoğun bulunur.",
         rankedSources: ["kirmizi_pancar", "roka_tere", "bulgur"]
       },
       {
@@ -890,7 +943,7 @@
         group: "Özel Moleküller",
         role: "Damarlarda Hidrojen Sülfür (H2S) üreterek damarları genişletir, kanın pıhtılaşmasını dengeler ve doğal antibiyotik/antiviral etki gösterir.",
         tip: "Sarımsak ezildikten sonra yemeğe/ısıya girmeden önce mutlaka 10 DAKİKA tezgahta bekletilmelidir.",
-        rankedSources: ["sarimsak_mor_sogan"]
+        rankedSources: ["sarimsak_mor_sogan", "pirasa"]
       },
       {
         name: "Kuersetin",
@@ -911,14 +964,14 @@
         group: "Özel Moleküller",
         role: "Toplardamar ve kılcal damar duvarlarını güçlendirir; varis, hemoroit, bacak ödemi ve morarmaları önler.",
         tip: "Mandalina ve limonun kabuk altındaki beyaz süngerimsi tabakasında (Albedo) bulunur; kabuk içini dişle sıyırarak tüket.",
-        rankedSources: ["mandalina_albedo"]
+        rankedSources: ["mandalina_albedo", "limon"]
       },
       {
         name: "Sülforafan",
         group: "Özel Moleküller",
         role: "Vücudun kendi baş detoks ve antioksidan sistemi olan Nrf2 yolunu ve Glutatyon üretimini çalıştırır.",
-        tip: "Çiğ mor lahana ve roka ısı görmediği için porsiyon başına en pratik ve en yüksek sülforafanı verir.",
-        rankedSources: ["mor_lahana", "roka_tere", "mor_havuc_turp", "brokoli_karnabahar"]
+        tip: "Çiğ mor lahana, beyaz lahana ve roka ısı görmediği için porsiyon başına en pratik ve en yüksek sülforafanı verir.",
+        rankedSources: ["mor_lahana", "beyaz_lahana", "roka_tere", "mor_havuc_turp", "brokoli_karnabahar"]
       },
       {
         name: "Antosiyanin",
@@ -973,22 +1026,22 @@
         name: "Koenzim Q10",
         group: "Özel Moleküller",
         role: "Kalp kası başta olmak üzere hücrelerin enerji (ATP) üretmesini sağlayan mitokondri kıvılcımıdır.",
-        tip: "Sardalya, uskumru ve hamsinin koyu renkli et kısımlarında ve yürek/ciğerde yoğun bulunur; fırında pişirilmelidir.",
-        rankedSources: ["sardalya_hamsi_uskumru", "ciger_kemik_suyu"]
+        tip: "Sardalya, uskumru ve hamsinin koyu renkli et kısımlarında ve yürek/ciğerde yoğun bulunur.",
+        rankedSources: ["sardalya_hamsi_uskumru", "konserve_sardalya", "ciger_kemik_suyu"]
       },
       {
         name: "EPA/DHA Omega-3",
         group: "Özel Moleküller",
         role: "Beyin dokusunun %60'ını oluşturan yağların ve retina zarlarının yapıtaşıdır; damar iltihabını ve trigliseridi düşürür.",
         tip: "Doğrudan aktif EPA/DHA için küçük deniz balıkları #1 numaradır; ceviz ve keten tohumu ise bitkisel ALA sağlar.",
-        rankedSources: ["sardalya_hamsi_uskumru", "ceviz", "corekotu_keten"]
+        rankedSources: ["sardalya_hamsi_uskumru", "konserve_sardalya", "ceviz", "corekotu_keten"]
       },
       {
         name: "Glisin & Kolajen",
         group: "Özel Moleküller",
         role: "Eklem kıkırdakları, tendonlar, cilt elastikiyeti, bağırsak duvarı onarımı ve gece derin uyku kalitesi için zorunlu amino asitlerdir.",
         tip: "Normal kas etinde azdır; kemikli incik/paça suyunda ve kılçığı/derisiyle yenen küçük balıklarda bol bulunur.",
-        rankedSources: ["ciger_kemik_suyu"]
+        rankedSources: ["ciger_kemik_suyu", "konserve_sardalya"]
       },
       {
         name: "L-Teanin & EGCG",
@@ -1001,15 +1054,15 @@
         name: "Epikateşin & Teobromin",
         group: "Özel Moleküller",
         role: "Damarlarda Nitrik Oksit (NO) patlaması yaparak tansiyonu dengeler ve beyin hafıza merkezine kan akışını hızlandırır.",
-        tip: "Alkalize edilmemiş doğal toz kakaoda bulunur; sütsüz olarak su veya kahveyle tüketilmelidir.",
-        rankedSources: ["dogal_kakao"]
+        tip: "Alkalize edilmemiş doğal toz kakaoda bulunur; şekersiz fındık ezmesiyle karıştırılarak veya kahveyle tüketilmelidir.",
+        rankedSources: ["dogal_kakao", "sekersiz_findik_ezmesi"]
       },
       {
         name: "Likopen & Lutein",
         group: "Özel Moleküller",
         role: "Lutein gözün sarı noktasını mavi ışıktan korur; Likopen ise damar plaklarını ve prostat büyümesini önler.",
         tip: "Lutein emilimi yumurta sarısı ve zeytinyağlı pazıda; Likopen emilimi ise pişmiş domates sosu ve közlenmiş kapya biberde zirvededir.",
-        rankedSources: ["yumurta", "pazi_ispanak", "kapya_biber", "domates_salatalik", "patlican_kabak_bamya"]
+        rankedSources: ["yumurta", "pazi_ispanak", "kapya_biber", "kavanoz_bakliyat_sebze", "domates_salatalik", "patlican_kabak_bamya"]
       },
       {
         name: "Nasunin",
@@ -1051,12 +1104,13 @@
         group: "Özel Moleküller",
         role: "Kas sentezini başlatan ana şalterdir. Vücudun %100 oranında dokuya dönüştürebildiği yüksek biyoyararlanımlı amino asit dizilimidir.",
         tip: "6 kriterde gram başına en ucuz ve pratik kaynak Tatlı Lor + Yumurta ikilisi ile Tavuk/Balıktır. Bulgur ve Makarna ise Mercimeğin proteinini tamamlar.",
-        rankedSources: ["tatli_lor_suzme", "tavuk_kalca_hindi", "sardalya_hamsi_uskumru", "yumurta", "kirmizi_et_kiyma", "mercimek_nohut", "bulgur", "durum_makarna", "karabugday", "yogurt_kefir_peynir", "beyaz_pirinc"]
+        rankedSources: ["tatli_lor_suzme", "tavuk_kalca_hindi", "sardalya_hamsi_uskumru", "konserve_sardalya", "yumurta", "kefir", "kirmizi_et_kiyma", "mercimek_nohut", "bulgur", "durum_makarna", "karabugday", "yogurt_kefir_peynir", "beyaz_pirinc"]
       }
     ];
 
     /*************************************************************************
-     * 2. GIDA VERİTABANI (3 Kademeli: 1=Şampiyon, 2=Özel Görev, 3=İkinci Derece)
+     * 2. GIDA VERİTABANI
+     * (tier: 1=Şampiyon, 2=Özel Görev, 3=İkinci Derece, 4=Yasaklı Hazır Gıda)
      *************************************************************************/
     const FOODS_DB = [
       // ==================== SEBZE: 1. DERECE (ŞAMPİYONLAR) ====================
@@ -1091,21 +1145,21 @@
         rightMethod: "İnce kıy, üzerine limon ve az tuz ekleyip ov; ZAMANLAMA KURALI olarak yemeden önce tezgahta 5-10 DAKİKA BEKLET. Hücre duvarı kırılınca 'mirosinaz' enzimi devreye girer ve sülforafan üretir. Salata üzerinde zeytinyağı ile eşleştir.",
         wrongMethod: "Doğrar doğramaz kaynar suya/tavaya atmak (ısı mirosinaz enzimini anında öldürür).",
         storage: "Kesik yüzeyini streçleyerek buzdolabında 3-4 hafta sıfır çürümeyle saklayabilirsin.",
-        molecules: ["Antosiyanin", "Sülforafan", "C Vitamini", "K1 & K2 Vitamini"],
+        molecules: ["Antosiyanin", "Sülforafan", "C Vitamini", "K1 & K2 Vitamini", "U Vitamini (S-Metilmetiyonin)"],
         systems: ["Damar & Kolajen", "Beyin & Odaklanma", "İltihap Düşürme", "Karaciğer & Detoks"]
       },
       {
         id: "roka_tere",
-        name: "Roka ve Tere",
+        name: "Roka ve Tere Otu",
         category: "Sebze",
         tier: 1,
         score: 94,
         portion: "Yarım demet (40-50g)",
-        surprise: "Göbek marul ve kıvırcığa göre gram başına 5-10 kat daha yoğun Folat (B9), K1 vitamini ve damarları genişleten doğal 'Nitrat' içerir.",
-        selection: "Yaprakları düz olduğu için kıvırcık gibi çamur/böcek tutmaz, 1 dakikada yıkanır.",
-        constraintNote: "Mide hacmini şişirmeden yarım demetle günlük folat ve K vitamini bazını verir.",
-        multiplierBadge: "Canlı Enzim Destekçisi + Nitrik Oksit",
-        rightMethod: "Pişmiş sebze, balık veya et yemeklerinin yanında 4-5 yaprak çiğ roka yemek, hem pişmiş sebzede ölen mirosinaz enzimini dışarıdan sağlar hem de damarlarda Nitrik Oksit üretir. Limon ve zeytinyağı ile eşleştir.",
+        surprise: "Göbek marul ve kıvırcığa göre gram başına 5-10 kat daha yoğun Folat (B9), K1 vitamini, Sülforafan (Glukoerusin) ve damarları genişletip tansiyonu düşüren doğal 'Nitrat' içerir.",
+        selection: "Yaprakları düz olduğu için kıvırcık gibi çamur/böcek tutmaz, 1 dakikada yıkanır. Tere otu ayrıca akciğer ve bronşları temizleyen kükürtlü glikozitler taşır.",
+        constraintNote: "Mide hacmini şişirmeden yarım demetle günlük folat, K1 ve nitrik oksit bazını verir.",
+        multiplierBadge: "Canlı Enzim Destekçisi + Nitrik Oksit Damar Açıcı",
+        rightMethod: "Pişmiş sebze, balık veya et yemeklerinin yanında 4-5 yaprak çiğ roka/tere yemek, hem pişmiş sebzede ölen mirosinaz enzimini dışarıdan sağlar hem de damarlarda Nitrik Oksit üretir. Limon ve sızma zeytinyağı ile eşleştir.",
         wrongMethod: "Antibakteriyel ağız gargarası kullanmak (ağızdaki faydalı bakteriler rokadaki nitratı damar açıcı nitrik okside çevirir).",
         storage: "Yıkamadan, nemli kağıt havluya sarıp poşet içinde buzdolabında 5-6 gün sakla.",
         molecules: ["Folat (B9)", "Sülforafan", "Betain (TMG) & Doğal Nitrat", "K1 & K2 Vitamini"],
@@ -1148,6 +1202,57 @@
 
       // ==================== SEBZE: ÖZEL GÖREV (İKAMESİZ UZMANLAR) ====================
       {
+        id: "kirmizi_pancar",
+        name: "Kırmızı Pancar (Çiğ Rende & Yoğurtlu Tarif)",
+        category: "Sebze",
+        tier: 2,
+        specialistTarget: "Nitrik Oksit & Karaciğer Metilasyonu",
+        portion: "Yarım - 1 küçük boy ÇİĞ rendelenmiş",
+        surprise: "İKAMESİZ MOLEKÜL: Pancardaki 'Betain (Trimetilglisin - TMG)' karaciğer yağlanmasını ve damar yaralayıcı homosisteini temizler. İçindeki 'Doğal Nitrat' ise damarlarda Nitrik Oksit üreterek tansiyonu düşürür ve dokulara giden oksijeni artırır. ÇİĞ YENDİĞİNDE vitamin ve nitrat kaybı %0'dır!",
+        selection: "Küçük-orta boy, sert ve koyu bordo olanları seç. El boyamasını önlemek için tepesini soymadan sapından/çatalla tutarak rendele (eline geçen boya bir dilim limonla ovunca 5 saniyede çıkar).",
+        constraintNote: "45 dk haşlama zahmeti yerine 30 saniyede ÇİĞ RENDELEME yöntemiyle tüm işleme kısıtı aşılır.",
+        multiplierBadge: "Limonla Toprak Tadını Silme + Yoğurt/Ceviz Eşleşmesi",
+        rightMethod: "ÇİĞ PANCAR NASIL HAZIRLANIR VE YENİR?\n1) TOPRAK KOKUSUNU SİLEN LİMON KİLİDİ: Çiğ pancarı kabuğunu soyup havuç gibi rendele. Pancara 'topraksı' tadı veren madde (Geosmin) baziktir; rendelediğin pancarın üzerine TAZE LİMON SUYU sıktığın saniye asit o toprak tadını tamamen yok eder ve ferah bir lezzet çıkar!\n2) 2 DAKİKALIK ÇİĞ PEMBE SULTAN (OKSALAT KALKANI): Rendelenmiş limonlu çiğ pancarı 3-4 kaşık SÜZME YOĞURT, 1 diş ezilmiş sarımsak, zeytinyağı ve 3-4 kırılmış CEVİZ ile karıştırıp meze/öğün olarak ye (Yoğurttaki kalsiyum pancardaki oksalatı bağlar!).\n3) SALATA ÇARPANI: Mor lahana ve roka salatasının içine çeyrek çiğ pancar rendele, sumakla karıştır.",
+        wrongMethod: "Soyup bol suda 45 dk haşlayarak kırmızı suyunu (tüm Betain ve Nitratı) lavaboya dökmek veya şekerli hazır konserve pancar turşusu almak.",
+        storage: "Çiğ bütün pancar buzdolabında 1-2 ay taş gibi dayanır (sıfır fire).",
+        molecules: ["Betain (TMG) & Doğal Nitrat", "Folat (B9)", "Potasyum"],
+        systems: ["Damar & Kolajen", "Karaciğer & Detoks", "Kas & Bağ Dokusu"]
+      },
+      {
+        id: "maydanoz",
+        name: "Maydanoz (Saplarıyla Birlikte)",
+        category: "Sebze",
+        tier: 2,
+        specialistTarget: "Apigenin, K1 Vitamini & Ödem Uzmanı",
+        portion: "Günde çeyrek - yarım demet çiğ (25-30g)",
+        surprise: "İKAMESİZ YOĞUNLUK: İnsanlar maydanozu C vitamini için yer ama asıl ikamesiz gücü doğadaki en yoğun 'Apigenin' (beyni sakinleştiren, yaşlanma enzimi CD38'i baskılayan ve tümör oluşumunu frenleyen flavonoid) ve 'K1 Vitamini' (sadece 10 dalı günlük ihtiyacın %150'sini verir!) kaynağı olmasıdır. İçindeki 'Apiol ve Miristisin' ise böbreklerden ödem atılımını hızlandırır.",
+        selection: "Sararmamış, ince saplı, koyu yeşil ve kokulu yerli maydanoz seç.",
+        constraintNote: "Yüksek oksalat içerir; bu yüzden kaynatıp/blenderdan geçirip koca bardak suyu içilmemeli, yaprak ve sap olarak çiğ yenmelidir.",
+        multiplierBadge: "Saplarını Atma + Limon & Peynir/Yoğurt Kalkanı",
+        rightMethod: "Maydanozun SAP KISIMLARINI ÇÖPE ATMA! Apigenin ve aromatik uçucu yağlar saplarında yapraktan daha yoğundur; saplarını incecik kıyıp salatanın, lor peynirinin veya mercimeğin üzerine ekle. Bol limon (demir emilimi ve taş koruması için) ve peynir/yoğurt ile eşleştir.",
+        wrongMethod: "Her gün demetlerce maydanozu blenderdan geçirip aç karnına suyunu içmek (yüksek oksalat böbrekleri yorar) veya pişmiş yemeğin içinde uzun süre kaynatmak.",
+        storage: "Sap kısımlarını su dolu bir bardağa koyup üzerine poşet geçirerek buzdolabında 10-14 gün taze tutabilirsin.",
+        molecules: ["Apigenin & Ftalidler (3nB)", "K1 & K2 Vitamini", "Folat (B9)", "C Vitamini", "A Vitamini (Retinol & Beta-Karoten)"],
+        systems: ["Damar & Kolajen", "Beyin & Odaklanma", "Kemik & Tiroid", "Karaciğer & Detoks"]
+      },
+      {
+        id: "beyaz_lahana",
+        name: "Beyaz Lahana (Çiğ Salata & Ev Turşusu)",
+        category: "Sebze",
+        tier: 2,
+        specialistTarget: "Mide Duvarı Onarıcı (U Vitamini) & Probiyotik",
+        portion: "1 kase ince kıyılmış çiğ veya 2 kaşık ev turşusu",
+        surprise: "İKAMESİZ MOLEKÜL: Mor lahana antioksidan şampiyonudur ama Beyaz Lahanada çok özel bir bileşik daha yoğundur: 'S-Metilmetiyonin (Bilimde U Vitamini olarak bilinir)'. Bu madde mide ve onikiparmak bağırsağındaki gastrit, reflü ve ülser hasarlarını doğrudan onaran nadir bir mukoza iyileştiricidir!",
+        selection: "Dışı temiz, sıkı ve ağır kış lahanası seç. Dolapta 1,5 ay bozulmaz (sıfır fire).",
+        constraintNote: "Suda uzun haşlandığında (sarma/kapuska) evi kükürt kokusu sarar ve U vitamini/sülforafan azalır; çiğ veya turşu olarak 1. sınıf uzmandır.",
+        multiplierBadge: "Çiğ Kıyım (5 Dk Beklet) veya Kaya Tuzlu Fermantasyon",
+        rightMethod: "1) ÇİĞ SALATA: Bıçakla incecik kıy, limon, zeytinyağı ve gaz kesici KİMYON ile ovup 5-10 dk beklet (U vitamini ve sülforafan %100 korunur).\n2) EV TURŞUSU (SAUERKRAUT): Beyaz lahanayı kaya tuzuyla ovup kavanoza bastırarak kendi suyunda fermente edersen, probiyotik bakteriler ve organik asitlerle bağırsak florasını baştan aşağı yeniler.",
+        wrongMethod: "Bol suda 30-40 dakika haşlayıp suyunu dökmek.",
+        storage: "Bütün veya kesik baş olarak buzdolabında 4-6 hafta dayanır.",
+        molecules: ["U Vitamini (S-Metilmetiyonin)", "Sülforafan", "Kefiran & Canlı Probiyotik", "C Vitamini", "K1 & K2 Vitamini"],
+        systems: ["Bağırsak & Sindirim", "Karaciğer & Detoks", "Bağışıklık & Senolitik"]
+      },
+      {
         id: "enginar",
         name: "Enginar (Yapraklı & Çanak)",
         category: "Sebze",
@@ -1155,13 +1260,13 @@
         specialistTarget: "Karaciğer & Safra Uzmanı",
         portion: "Haftada 1-2 adet",
         surprise: "İKAMESİZ MOLEKÜL: Enginardaki 'Sinarin (Cynarin)' ve 'Silimarin', başka hiçbir sebzede bulunmaz! Karaciğerin safra üretimini doğrudan uyarır, karaciğer yağlanmasını temizler ve bağırsaktaki en güçlü prebiyotiklerden olan 'İnülin' içerir.",
-        selection: "Mevsiminde (Bahar) yapraklı taze enginar al; kışın ise soyma zahmeti olmayan hazır su içindeki çanak enginarları veya dondurulmuş çanakları seç.",
+        selection: "Mevsiminde (Bahar) yapraklı taze enginar al; kışın ise soyma zahmeti olmayan hazır su içindeki cam kavanoz çanak enginarları seç.",
         constraintNote: "Genel vitamin için değil, doğrudan karaciğer ve safra detoksu için haftalık rutine eklenmelidir.",
         multiplierBadge: "5x Sinarin Sırrı: Yeşil Yaprakların Diplerini Sıyır!",
         rightMethod: "ŞAŞIRTICI GERÇEK: Karaciğeri temizleyen Sinarin maddesinin %80'i enginarın beyaz çanağında değil, çöpe atılan YEŞİL YAPRAKLARINDADIR! Mevsiminde enginarı dış yapraklarıyla birlikte zeytinyağı-limonlu suda haşla ve yaprakların etli dip kısımlarını dişinle sıyırarak ye.",
         wrongMethod: "Yapraklarını tamamen çöpe atıp sadece çanağı yemek.",
         storage: "Taze çanakları limonlu suda 3-4 gün, dondurucuda 6 ay saklayabilirsin.",
-        molecules: ["Sinarin & Silimarin", "Pektin & Dirençli Nişasta", "Folat (B9)", "Magnezyum"],
+        molecules: ["Sinarin & Silimarin", "Kaempferol & İnülin", "Pektin & Dirençli Nişasta", "Folat (B9)", "Magnezyum"],
         systems: ["Karaciğer & Detoks", "Bağırsak & Sindirim", "Damar & Kolajen"]
       },
       {
@@ -1199,23 +1304,6 @@
         systems: ["Damar & Kolajen", "Beyin & Odaklanma", "İltihap Düşürme"]
       },
       {
-        id: "kirmizi_pancar",
-        name: "Kırmızı Pancar",
-        category: "Sebze",
-        tier: 2,
-        specialistTarget: "Nitrik Oksit & Karaciğer Metilasyonu",
-        portion: "1 küçük boy (Çiğ rendelenmiş veya fırınlanmış)",
-        surprise: "İKAMESİZ MOLEKÜL: Pancardaki 'Betain (Trimetilglisin - TMG)' karaciğer yağlanmasını ve damar yaralayıcı homosisteini temizler. İçindeki 'Doğal Nitrat' ise damarlarda Nitrik Oksit üreterek tansiyonu düşürür ve kaslara/beyne giden oksijeni artırır.",
-        selection: "Küçük-orta boy, sert ve koyu bordo olanları seç.",
-        constraintNote: "El boyama ve uzun haşlama zahmeti vardır; ancak çiğ rendeleme tekniğiyle bu zahmet aşılır.",
-        multiplierBadge: "Çiğ Rendeleme veya Buhar (Suda Kaynatma!)",
-        rightMethod: "Pancarı saatlerce suda kaynatırsan içindeki Betain ve Nitrat suya geçip çöpe gider. En pratik yol: Çiğ pancarın kabuğunu soyup havuç gibi salatanın içine RENDELEMEK (veya yağlı kağıtta 35 dk fırınlamak). Efor/yürüyüşten 1-2 saat önce tüketmek damar açıcı etkiyi zirveye çıkarır.",
-        wrongMethod: "Soyup bol suda haşlayarak kırmızı suyunu lavaboya dökmek veya şekerli/aşırı tuzlu hazır konserve pancar turşusu almak.",
-        storage: "Buzdolabında 1-2 ay taş gibi dayanır (sıfır fire).",
-        molecules: ["Betain (TMG) & Doğal Nitrat", "Folat (B9)", "Potasyum"],
-        systems: ["Damar & Kolajen", "Karaciğer & Detoks", "Kas & Bağ Dokusu"]
-      },
-      {
         id: "sarimsak_mor_sogan",
         name: "Sarımsak & Mor/Kırmızı Soğan",
         category: "Sebze",
@@ -1229,7 +1317,7 @@
         rightMethod: "1) SARIMSAK ZAMANLAMASI: Bıçakla ezip doğradıktan sonra tavaya/yemeğe atmadan önce MUTLAKA 10 DAKİKA TEZGAHTA BEKLET! Bekletmezsen ısı allinaz enzimini anında öldürür ve allisin oluşmaz.\n2) MOR SOĞAN: Kuersetinin %70'i kuru kabuğun hemen altındaki İLK 1-2 ETLİ HALKADADIR; soyarken dış katmanı kalın soyup çöpe atma! Çiğ yerken sumakla eşleştir.",
         wrongMethod: "Sarımsağı bütün yutmak veya ezer ezmez kızgın yağa atıp yakmak.",
         storage: "Buzdolabında değil; karanlık, kuru ve hava alan kilerde aylarca sakla.",
-        molecules: ["Allisin & Organosülfürler", "Kuersetin", "Antosiyanin"],
+        molecules: ["Allisin & Organosülfürler", "Kuersetin", "Antosiyanin", "Kaempferol & İnülin"],
         systems: ["Damar & Kolajen", "Bağışıklık & Senolitik", "İltihap Düşürme"]
       },
 
@@ -1251,12 +1339,28 @@
         systems: ["Bağırsak & Sindirim", "Damar & Kolajen"]
       },
       {
+        id: "pirasa",
+        name: "Pırasa (Koyu Yeşil Yapraklarıyla)",
+        category: "Sebze",
+        tier: 3,
+        portion: "1 tabak zeytinyağlı (200g)",
+        surprise: "Soğan ve sarımsakla aynı kükürtlü ailedendir (Allium) ancak mideyi yakmadan koca bir tabak yenebilir. Damar iç yüzeyini (endotel) koruyan 'Kaempferol' flavonoidi ve bağırsaktaki faydalı Bifidobakterileri besleyen 'İnülin (Prebiyotik lif)' deposudur.",
+        selection: "İnce-orta kalınlıkta, koyu yeşil yaprakları diri ve taze olan pırasaları seç.",
+        constraintNote: "Ayıklama, yıkama ve tencerede pişirme zahmeti nedeniyle 2. derecede kış sebzesidir.",
+        multiplierBadge: "Yeşil Yaprak Sırrı (5x Kaempferol) + 5 Dk Bekletme",
+        rightMethod: "1) YEŞİL YAPRAKLARI ATMA: Herkes pırasanın sadece beyaz sapını kullanıp yeşil kısmını çöpe atar; oysa Kaempferol, Folat ve K1 vitamini KOYU YEŞİL YAPRAKLARINDA beyaz kısmından 5 KAT DAHA FAZLADIR!\n2) Doğradıktan sonra tencereye atmadan 5-10 dk beklet (kükürtlü bileşikler aktifleşsin). Beyaz pirinç yerine BULGUR veya NOHUT, havuç ve zeytinyağı ile kısık ateşte kısa süre pişir, ılıyınca bol limon sık.",
+        wrongMethod: "Koyu yeşil yapraklarını çöpe atmak ve içine beyaz pirinç koyup çok uzun süre kaynatarak eritmek.",
+        storage: "Buzdolabı sebzeliğinde 1-2 hafta dayanır.",
+        molecules: ["Kaempferol & İnülin", "Allisin & Organosülfürler", "K1 & K2 Vitamini", "Folat (B9)"],
+        systems: ["Bağırsak & Sindirim", "Damar & Kolajen"]
+      },
+      {
         id: "brokoli_karnabahar",
-        name: "Brokoli, Karnabahar ve Beyaz Lahana",
+        name: "Brokoli ve Karnabahar",
         category: "Sebze",
         tier: 3,
         portion: "1 kase buharda pişmiş (150g)",
-        surprise: "Sülforafan, C vitamini ve K1 vitamini açısından çok güçlüdürler; ancak mor lahanaya göre çabuk sararırlar (fire kısıtı), fiyatları daha yüksektir ve haşlama/koku zahmeti vardır.",
+        surprise: "Sülforafan, C vitamini ve K1 vitamini açısından çok güçlüdürler; ancak mor ve beyaz lahanaya göre çabuk sararırlar (fire kısıtı), fiyatları daha yüksektir ve haşlama/koku zahmeti vardır.",
         selection: "Çiçekleri sıkı, koyu yeşil (sararmamış) brokolileri seç.",
         constraintNote: "Pişirme zahmeti ve gaz yan etkisi nedeniyle çiğ mor lahananın ardından 2. derecede tercih edilir.",
         multiplierBadge: "5 Dk Buhar + Çiğ Roka/Turp Enzim Eşleşmesi",
@@ -1301,6 +1405,23 @@
 
       // ==================== MEYVE: 1. DERECE (ŞAMPİYONLAR) ====================
       {
+        id: "limon",
+        name: "Limon (Suyu, Beyaz Lifleri ve Sarı Kabuğu)",
+        category: "Meyve",
+        tier: 1,
+        score: 98,
+        portion: "Her gün 1 adet (Salata, çorba, tahin ve çayda)",
+        surprise: "Mutfaktaki 1 numaralı 'Biyoyararlanım Anahtarı'dır! İçindeki 'Sitrik Asit' idrardaki kalsiyumu bağlayarak BÖBREK TAŞI OLUŞUMUNU ÖNLEYEN EN GÜÇLÜ DOĞAL MOLEKÜLDÜR. Ayrıca mercimek/ıspanak/tahindeki bitkisel demirin emilimini 4 kat, yeşil çaydaki EGCG antioksidanını 5 kat artırır. Sarı kabuğundaki 'D-Limonen' ise karaciğer detoks enzimlerini çalıştırır!",
+        selection: "İnce kabuklu, ağır ve sulu limonları seç. Kabuğunu rendelemek için mumlanmamış doğal limon tercih et.",
+        constraintNote: "Buzdolabında 1 ay bozulmaz (sıfır fire), şekeri sıfıra yakındır ve her yemeğin emilimini katlar.",
+        multiplierBadge: "Ilık Yemeğe Sıkma + Sarı Kabuk Rendesi (D-Limonen)",
+        rightMethod: "1) ZAMANLAMA (ISI KURALI): Limonu fokurdayan kaynar çorbaya veya kaynar çaya sıkma (C vitamini ısıda ölür); yemek tabağa gelip ILINDIĞINDA sık.\n2) KABUK RENDESİ: Limonun suyunu sıktıktan sonra çöpe atmadan önce sarı dış kabuğunu salatanın veya yoğurdun üzerine hafifçe rendele (saf D-Limonen ve Hesperidin alırsın).\n3) Çiğ pancarın üzerine sıkarak toprak kokusunu (geosmin) saniyeler içinde yok et.",
+        wrongMethod: "Pahalı ve koruyucu katkılı plastik şişe 'hazır limon sosu' (sitrik asitli su) kullanmak veya limonu kaynar tencereye sıkmak.",
+        storage: "Buzdolabında 3-4 hafta; su dolu cam kavanoz içinde dolapta saklarsan 2 ay kurumasız taze kalır.",
+        molecules: ["Sitrik Asit & D-Limonen", "C Vitamini", "Hesperidin & Diosmin"],
+        systems: ["Karaciğer & Detoks", "Damar & Kolajen", "Bağışıklık & Senolitik", "Bağırsak & Sindirim"]
+      },
+      {
         id: "elma_kabuklu",
         name: "Küçük Boy Kırmızı / Yeşil Elma (Kabuklu)",
         category: "Meyve",
@@ -1331,7 +1452,7 @@
         rightMethod: "Dilimlerin üzerindeki beyaz iplikleri ayıklama. Soyduğun kabuğun iç yüzeyinde kalan o temiz, acı olmayan beyaz süngerimsi tabakayı (albedo) ön dişlerinle sıyırarak kemir/yut. Sıfır şekerle saf pektin ve damar ilacı alırsın.",
         wrongMethod: "Beyaz lifleri çöpe atmak veya meyveyi sıkıp suyunu içmek (lif sıfırlanır, fruktoz karaciğere yüklenir).",
         storage: "Serin yerde veya dolapta 2 hafta dayanır.",
-        molecules: ["Hesperidin & Diosmin", "C Vitamini", "Pektin & Dirençli Nişasta"],
+        molecules: ["Hesperidin & Diosmin", "C Vitamini", "Pektin & Dirençli Nişasta", "Sitrik Asit & D-Limonen"],
         systems: ["Damar & Kolajen", "Bağırsak & Sindirim"]
       },
       {
@@ -1369,7 +1490,7 @@
         systems: ["Bağırsak & Sindirim", "Bağışıklık & Senolitik"]
       },
 
-      // ==================== MEYVE: ÖZEL GÖREV (İKAMESİZ UZMANLAR) ====================
+      // ==================== MEYVE: ÖZEL GÖREV & 2. DERECE ====================
       {
         id: "nar",
         name: "Nar (Zarı ve Çekirdeğiyle)",
@@ -1404,8 +1525,6 @@
         molecules: ["Fisetin", "C Vitamini", "Antosiyanin"],
         systems: ["Beyin & Odaklanma", "Bağışıklık & Senolitik", "Damar & Kolajen"]
       },
-
-      // ==================== MEYVE: 2. DERECE (SIK TÜKETİLEN / ŞARTLI) ====================
       {
         id: "uzum",
         name: "Üzüm (Çekirdekli Siyah vs. Çekirdeksiz Beyaz)",
@@ -1484,7 +1603,7 @@
         constraintNote: "1 gram net protein başına Türkiye'deki EN UCUZ ve EN PRATİK kaynaktır. Pişirme yok, koku yok, aşırı tuz ve doymuş yağ yan etkisi yok.",
         multiplierBadge: "%100 Biyoyararlanım (Saf Whey + Kazein)",
         rightMethod: "Sabah 2 yumurtanın (12g protein) yanına 3-4 yemek kaşığı tatlı lor (13g protein) ekleyerek üzerine zeytinyağı, kekik ve çörek otu gezdir. Tek öğünde mideyi şişirmeden 25g kusursuz protein alırsın.",
-        wrongMethod: "Günlük 30g proteini normal tuzlu beyaz peynirden veya kaşardan almaya çalışmak (aşırı tuz ve doymuş yağ yükü getirir).",
+        wrongMethod: "Günlük 30g proteini normal tuzlu beyaz peynirden veya eritme kaşardan almaya çalışmak.",
         storage: "Lor peyniri açıldıktan sonra 4-5 günde tüketilmeli; fazlası porsiyonlanıp dondurucuya atılabilir.",
         molecules: ["Tam Protein (Whey, Lösin & Metiyonin)", "Kalsiyum", "B12 & B Grubu (B1/B6)"],
         systems: ["Kas & Bağ Dokusu", "Kemik & Tiroid"]
@@ -1505,6 +1624,23 @@
         storage: "Buzdolabının kapak rafında değil, iç orta rafında kutusuyla sakla.",
         molecules: ["Kolin", "Likopen & Lutein", "Tam Protein (Whey, Lösin & Metiyonin)", "B12 & B Grubu (B1/B6)", "D Vitamini", "A Vitamini (Retinol & Beta-Karoten)"],
         systems: ["Beyin & Odaklanma", "Kas & Bağ Dokusu", "Göz & Retina", "Karaciğer & Detoks"]
+      },
+      {
+        id: "kefir",
+        name: "Sade Kefir (Bağırsak Mikrobiyota Şampiyonu)",
+        category: "Protein & Süt",
+        tier: 1,
+        score: 96,
+        portion: "Günde 1 su bardağı (200-250 ml)",
+        surprise: "Normal yoğurtta sadece 2-3 çeşit faydalı bakteri varken ve bunlar bağırsaktan transit geçerken; gerçek kefirde 30'DAN FAZLA PROBİYOTİK BAKTERİ VE FAYDALI MAYA SUŞU vardır ve bağırsak duvarına KALICI OLARAK YERLEŞİRLER! Ayrıca sadece kefirde bulunan 'Kefiran' bağışıklığı dengeler, K2 vitamini ve uyku hormonu öncüsü 'Triptofan' sağlar.",
+        selection: "Şekerli ve aromalı 'meyveli kefirleri' ASLA ALMA! Katkısız 'Sade Kefir' seç (veya evde kefir danesiyle mayala).",
+        constraintNote: "Laktozun %99'u bakteriler tarafından parçalandığı için süt içince şişkinlik yaşayanlar bile rahatlıkla içebilir; sıfır hazırlık ister.",
+        multiplierBadge: "Gece Zamanlaması + Yulaf / Keten Tohumu Eşleşmesi",
+        rightMethod: "1) AKŞAM / GECE ZAMANLAMASI: Gece yatmadan 1-2 saat önce 1 bardak sade kefir içmek, içindeki Triptofan ve kalsiyum sayesinde derin uykuyu destekler ve gece boyu bağırsak duvarını onarır.\n2) PREBİYOTİK EŞLEŞTİRME: Kefirin içine 1 çay kaşığı taze çekilmiş keten tohumu veya yulaf ezmesi eklersen probiyotik bakterilere kendi yemini (prebiyotik) vermiş olursun!",
+        wrongMethod: "Kefiri kaynatmak/ısıtmak (tüm canlı bakteriler ölür) veya şekerli meyveli hazır kefir içmek.",
+        storage: "Soğuk zincirde (buzdolabında) kapak açıldıktan sonra 3-4 gün içinde tüket.",
+        molecules: ["Kefiran & Canlı Probiyotik", "K1 & K2 Vitamini", "Kalsiyum", "Tam Protein (Whey, Lösin & Metiyonin)", "B12 & B Grubu (B1/B6)"],
+        systems: ["Bağırsak & Sindirim", "Bağışıklık & Senolitik", "Kemik & Tiroid", "Beyin & Odaklanma"]
       },
       {
         id: "sardalya_hamsi_uskumru",
@@ -1542,19 +1678,19 @@
       },
       {
         id: "yogurt_kefir_peynir",
-        name: "Ev Yoğurdu, Kefir & Olgun Peynir (Ezine / Eski Kaşar)",
+        name: "Ev Yoğurdu & Olgun Peynir (Ezine / Eski Kaşar)",
         category: "Protein & Süt",
         tier: 1,
         score: 90,
         portion: "1 kase Yoğurt (suyuyla) + 1-2 kibrit kutusu Olgun Peynir",
-        surprise: "Aldığın kalsiyumun damarlarda ve böbrekte kireçlenme yapmak yerine doğrudan kemiklere gitmesini sağlayan şoför molekül 'K2 Vitamini (MK-7)' sebzelerde yoktur; fermente olgun peynirlerde ve yoğurtta bulunur!",
+        surprise: "Aldığın kalsiyumun damarlarda ve böbrekte kireçlenme yapmak yerine doğrudan kemiklere gitmesini sağlayan şoför molekül 'K2 Vitamini (MK-7)' sebzelerde yoktur; şirden mayalı olgun peynirlerde ve yoğurtta bulunur!",
         selection: "Eritme/tost peyniri değil; şirden mayalı olgunlaştırılmış doğal Ezine, tulum veya eski kaşar seç.",
         constraintNote: "Olgun peynirde tuz ve doymuş yağ yüksek olduğu için günde 1-2 kibrit kutusu (30-40g) ile sınırla.",
         multiplierBadge: "Yeşil Su Sırrı (Riboflavin B2 + Whey)",
         rightMethod: "Yoğurdun kasede biriken o YEŞİLİMSİ SUYUNU ASLA DÖKME! B2 vitamini, potasyum, laktik asit ve en hızlı emilen peynir altı suyu proteinleri o suyun içindedir.",
         wrongMethod: "Yoğurdun suyunu lavaboya dökmek veya laktozlu tatlı süt içip bağırsakta şişkinlik yaratmak.",
         storage: "Soğuk zincirde 1-2 hafta.",
-        molecules: ["K1 & K2 Vitamini", "Kalsiyum", "Tam Protein (Whey, Lösin & Metiyonin)"],
+        molecules: ["K1 & K2 Vitamini", "Kalsiyum", "Kefiran & Canlı Probiyotik", "Tam Protein (Whey, Lösin & Metiyonin)"],
         systems: ["Kemik & Tiroid", "Damar & Kolajen", "Bağırsak & Sindirim"]
       },
 
@@ -1595,6 +1731,23 @@
 
       // ==================== KURUYEMİŞ & TOHUM: 1. DERECE (ŞAMPİYONLAR) ====================
       {
+        id: "kabak_aycekirdegi",
+        name: "Çiğ Kabak Çekirdeği İçi & Çiğ Ayçekirdeği İçi",
+        category: "Kuruyemiş & Tohum",
+        tier: 1,
+        score: 98,
+        portion: "1 küçük avuç karışım (30g = 1 yemek kaşığı kabak + 1 yemek kaşığı ayçekirdeği içi)",
+        surprise: "Pahalı badem ve kajuyu tamamen gereksiz kılar! 1 avuç çiğ kabak çekirdeği içi günlük Magnezyumun %40'ını (155mg) ve Çinkonun %25'ini; 1 avuç çiğ ayçekirdeği içi ise günlük E Vitamininin %70'ini bademin beşte biri fiyatına verir!",
+        selection: "Kavrulmuş ve tuzlu kabuklu olanları değil; aktardan/marketten 'ÇİĞ ve İÇ (kabuğu soyulmuş)' olarak al.",
+        constraintNote: "Çitleme zahmeti sıfırdır, mide hacmini hiç kaplamaz (30g), fiyatı çok ucuzdur.",
+        multiplierBadge: "Çiğ Form (Isıda Bozulmamış E Vitamini)",
+        rightMethod: "Kahvaltıda lor peynirinin, yulafın, yoğurdun veya akşam salatasının üzerine doğrudan 1 avuç çiğ iç serp.",
+        wrongMethod: "Kavrulmuş ve aşırı tuzlu alıp kabuk çitlemek (kavurma ısısı E vitaminini ve sağlıklı yağları bozar).",
+        storage: "Serin yerde veya buzdolabında ağzı kapalı kavanozda sakla.",
+        molecules: ["Magnezyum", "E Vitamini", "Çinko"],
+        systems: ["Damar & Kolajen", "Kas & Bağ Dokusu", "Bağışıklık & Senolitik"]
+      },
+      {
         id: "ceviz",
         name: "Ceviz (Kahverengi İç Zarıyla)",
         category: "Kuruyemiş & Tohum",
@@ -1612,21 +1765,21 @@
         systems: ["Beyin & Odaklanma", "Damar & Kolajen", "Bağışıklık & Senolitik"]
       },
       {
-        id: "kabak_aycekirdegi",
-        name: "Çiğ Kabak Çekirdeği İçi & Çiğ Ayçekirdeği İçi",
+        id: "cig_findik",
+        name: "Çiğ İç Fındık (Kahverengi Zarıyla)",
         category: "Kuruyemiş & Tohum",
         tier: 1,
-        score: 98,
-        portion: "1 küçük avuç karışım (30g = 1 yemek kaşığı kabak + 1 yemek kaşığı ayçekirdeği içi)",
-        surprise: "Pahalı badem ve kajuyu tamamen gereksiz kılar! 1 avuç çiğ kabak çekirdeği içi günlük Magnezyumun %40'ını (155mg) ve Çinkonun %25'ini; 1 avuç çiğ ayçekirdeği içi ise günlük E Vitamininin %70'ini bademin beşte biri fiyatına verir!",
-        selection: "Kavrulmuş ve tuzlu kabuklu olanları değil; aktardan/marketten 'ÇİĞ ve İÇ (kabuğu soyulmuş)' olarak al.",
-        constraintNote: "Çitleme zahmeti sıfırdır, mide hacmini hiç kaplamaz (30g), fiyatı çok ucuzdur.",
-        multiplierBadge: "Çiğ Form (Isıda Bozulmamış E Vitamini)",
-        rightMethod: "Kahvaltıda lor peynirinin, yulafın, yoğurdun veya akşam salatasının üzerine doğrudan 1 avuç çiğ iç serp.",
-        wrongMethod: "Kavrulmuş ve aşırı tuzlu alıp kabuk çitlemek (kavurma ısısı E vitaminini ve sağlıklı yağları bozar).",
-        storage: "Serin yerde veya buzdolabında ağzı kapalı kavanozda sakla.",
-        molecules: ["Magnezyum", "E Vitamini", "Çinko"],
-        systems: ["Damar & Kolajen", "Kas & Bağ Dokusu", "Bağışıklık & Senolitik"]
+        score: 95,
+        portion: "Günde 1 küçük avuç (25-30g = 12-15 adet)",
+        surprise: "İthal ve pahalı bademe hiç ihtiyacın yok! Yerli Çiğ Fındığın yağ yapısının %80'i Soğuk Sıkım Sızma Zeytinyağı ile birebir aynıdır (Oleik Asit - Omega-9)! Tek bir avucu günlük E Vitamini ihtiyacının %50'sini, damar/kemik enzimi olan Manganez ve Bakır ihtiyacının %65'ini karşılar.",
+        selection: "Çifte kavrulmuş (yağı okside olmuş, zarı soyulmuş) fındık değil; üzerinde ince kahverengi zarı duran 'ÇİĞ İÇ FINDIK' veya kabuklu fındık seç.",
+        constraintNote: "Çiğ formda E vitamini %100 canlıdır; ince kahverengi zarında ise proantosiyanidin polifenolleri bulunur.",
+        multiplierBadge: "Çiğ + Zarlı Tüketim + Kakao/Elma Eşleşmesi",
+        rightMethod: "Kavurmadan çiğ olarak ve üzerindeki kahverengi zarı soymadan tüket. Elma dilimleriyle veya 1 çay kaşığı doğal kakao ile birlikte yediğinde damar açıcı etkisi katlanır.",
+        wrongMethod: "Yüksek ısıda kavrulmuş, tuzlanmış veya şeker/palm yağı katılmış paketli fındık kremalarını (Nutella/Çokokrem) yemek.",
+        storage: "Cam kavanozda buzdolabında veya dondurucuda 6-12 ay acılaşmadan taze kalır.",
+        molecules: ["E Vitamini", "Magnezyum"],
+        systems: ["Damar & Kolajen", "Beyin & Odaklanma", "Kas & Bağ Dokusu"]
       },
       {
         id: "tahin",
@@ -1683,17 +1836,17 @@
       },
       {
         id: "findik_badem_fistik",
-        name: "Çiğ Fındık, Badem ve Yer Fıstığı",
+        name: "Çiğ Badem ve Yer Fıstığı (Küf/Aflatoksin Şartlı)",
         category: "Kuruyemiş & Tohum",
         tier: 3,
-        portion: "1 küçük avuç (25-30g)",
-        surprise: "Çiğ fındık zeytinyağındaki tekli doymamış yağ (oleik asit) ve E vitamini açısından harika bir yerli alternatiftir. Badem ise fiyat/performans olarak kabak ve ayçekirdeği içinin gerisinde kalır.",
-        selection: "KÜF ZEHİRİ UYARISI: Yer fıstığı aslında baklagildir ve nemli depolarda beklediğinde karaciğer düşmanı 'Aflatoksin' (küf toksini) üretme riski en yüksek gıdadır! Ağzına acımsı/küflü bir fıstık veya fındık gelirse yutma, hemen tükür.",
+        portion: "1 küçük avuç (25g)",
+        surprise: "Badem iyi bir E vitamini ve magnezyum kaynağıdır ancak çiğ fındık ve kabak/ayçekirdeği içi aynı faydayı çok daha ucuza verir. Yer fıstığı ise aslında ağaç yemişi değil, toprak altında yetişen bir baklagildir.",
+        selection: "KÜF ZEHİRİ (AFLATOKSİN) UYARISI: Yer fıstığı nemli depolarda beklediğinde karaciğere en çok zarar veren 'Aflatoksin' (küf zehiri) üretme riski en yüksek gıdadır! Ağzına acımsı/bayat bir fıstık gelirse ASLA YUTMA, hemen tükür ve ağzını çalkala.",
         constraintNote: "Badem yüksek fiyat kısıtına, yer fıstığı ise aflatoksin ve yüksek Omega-6 kısıtına takıldığı için 2. derecededir.",
-        multiplierBadge: "Çiğ (Kavrulmamış) Seçim",
-        rightMethod: "Fındık ve bademi kavrulmamış (ÇİĞ) olarak seç ki içindeki E vitamini ve sağlıklı yağlar ısıda bozulmasın.",
-        wrongMethod: "Soslu, mısır şuruplu veya aşırı kavrulmuş bayat kuruyemiş yemek.",
-        storage: "Nem almayan serin yerde veya buzdolabında.",
+        multiplierBadge: "Çiğ (Kavrulmamış) ve Taze Seçim",
+        rightMethod: "Alacaksan kavrulmamış (çiğ) ve güvenilir sirkülasyonu hızlı yerlerden al.",
+        wrongMethod: "Cips kaplamalı, mısır şuruplu veya bayat/acımsı yer fıstığı yemek.",
+        storage: "Buzdolabında ağzı kapalı cam kavanozda.",
         molecules: ["E Vitamini", "Magnezyum"],
         systems: ["Damar & Kolajen"]
       },
@@ -1733,24 +1886,7 @@
         systems: ["Bağırsak & Sindirim", "Damar & Kolajen"]
       },
 
-      // ==================== TAHIL & EKMEK: 1. DERECE (ŞAMPİYONLAR) ====================
-      {
-        id: "durum_makarna",
-        name: "Durum Buğdayı Makarnası (Ekmek Yerine)",
-        category: "Tahıl & Ekmek",
-        tier: 1,
-        score: 94,
-        portion: "1 porsiyon haşlanmış (70-80g kuru ağırlık)",
-        surprise: "NEDEN EKMEKTEN ÇOK ÜSTÜNDÜR? Beyaz ekmek yumuşak undan mayalanarak yapıldığı için sünger gibidir; midede dakikalar içinde saf şekere dönüşür (Glisemik İndeks: 80) ve 2 günde küflenir. Oysa gerçek makarna sert 'Durum Buğdayı İrmiğinden' yüksek basınçla üretilir; nişastası sıkı bir protein ağının içinde kilitlidir! Bu yüzden kan şekerini ekmek gibi zıplatmaz (Glisemik İndeks: 45-50), %13 protein içerir, sıfır katkılıdır ve 2 yıl bozulmaz!",
-        selection: "Paketin üzerinde '%100 Durum Buğdayı İrmiği' yazanları (veya Tam Durum Buğdayı makarnasını) seç. Kırık/yumuşak buğdaydan yapılan ucuz makarnalar haşlanırken dağılır.",
-        constraintNote: "Sıfır fire, en ucuz maliyet, yüksek tokluk ve düşük glisemik yük ile ekmekten çok daha sağlıklı bir karbonhidrat bazdır.",
-        multiplierBadge: "Al Dente (8 Dk) + Soğut/Isıt Çarpanı (%50 Düşük Şeker Tepkisi)",
-        rightMethod: "1) AL DENTE PİŞİRME: Makarnayı asla 15-20 dk haşlayıp lapa yapma (protein ağı yırtılır ve nişasta serbest kalır). Pakette yazan süreden 1 dk az (8-9 dk, dişe diri gelecek şekilde) haşla ve haşlama suyunu dökme (az suyla çektir veya sosuna kat ki B vitaminleri kaybolmasın).\n2) SOĞUTMA ZAMANLAMASI: Haşlanmış makarnayı soğutup 'Makarna Salatası' (lor peyniri, zeytinyağı, ceviz, kapya biberle) yaparsan veya soğuduktan sonra tekrar ısıtırsan, nişastası 'Tip-3 Dirençli Nişasta'ya dönüşür ve kan şekeri zıplamasını %50 azaltır!",
-        wrongMethod: "Makarnayı 15-20 dk haşlayıp hamur gibi yapmak, haşlama suyunu lavaboya dökmek ve yanında ekmek yemek.",
-        storage: "Kuru paket kilerde 2 yıl sıfır fireyle dayanır.",
-        molecules: ["Pektin & Dirençli Nişasta", "Tam Protein (Whey, Lösin & Metiyonin)", "Selenyum & İyot", "B12 & B Grubu (B1/B6)"],
-        systems: ["Bağırsak & Sindirim", "Kas & Bağ Dokusu"]
-      },
+      // ==================== TAHIL & EKMEK: 1. DERECE, ÖZEL GÖREV & 2. DERECE ====================
       {
         id: "bulgur",
         name: "Bulgur (Pilavlık / Köftelik / Siyez)",
@@ -1785,8 +1921,23 @@
         molecules: ["Avenantramid & Beta-Glukan", "Pektin & Dirençli Nişasta", "Magnezyum", "Çinko", "B12 & B Grubu (B1/B6)"],
         systems: ["Damar & Kolajen", "Bağırsak & Sindirim", "İltihap Düşürme"]
       },
-
-      // ==================== TAHIL: ÖZEL GÖREV & 2. DERECE ====================
+      {
+        id: "durum_makarna",
+        name: "Durum Buğdayı Makarnası (Ekmek Yerine)",
+        category: "Tahıl & Ekmek",
+        tier: 1,
+        score: 94,
+        portion: "1 porsiyon haşlanmış (70-80g kuru ağırlık)",
+        surprise: "NEDEN EKMEKTEN ÇOK ÜSTÜNDÜR? Beyaz ekmek yumuşak undan mayalanarak yapıldığı için sünger gibidir; midede dakikalar içinde saf şekere dönüşür (Glisemik İndeks: 80) ve 2 günde küflenir. Oysa gerçek makarna sert 'Durum Buğdayı İrmiğinden' yüksek basınçla üretilir; nişastası sıkı bir protein ağının içinde kilitlidir! Bu yüzden kan şekerini ekmek gibi zıplatmaz (Glisemik İndeks: 45-50), %13 protein içerir, sıfır katkılıdır ve 2 yıl bozulmaz!",
+        selection: "Paketin üzerinde '%100 Durum Buğdayı İrmiği' yazanları (veya Tam Durum Buğdayı makarnasını) seç. Kırık/yumuşak buğdaydan yapılan ucuz makarnalar haşlanırken dağılır.",
+        constraintNote: "Sıfır fire, en ucuz maliyet, yüksek tokluk ve düşük glisemik yük ile ekmekten çok daha sağlıklı bir karbonhidrat bazdır.",
+        multiplierBadge: "Al Dente (8 Dk) + Soğut/Isıt Çarpanı (%50 Düşük Şeker Tepkisi)",
+        rightMethod: "1) AL DENTE PİŞİRME: Makarnayı asla 15-20 dk haşlayıp lapa yapma (protein ağı yırtılır ve nişasta serbest kalır). Pakette yazan süreden 1 dk az (8-9 dk, dişe diri gelecek şekilde) haşla ve haşlama suyunu dökme (az suyla çektir veya sosuna kat ki B vitaminleri kaybolmasın).\n2) SOĞUTMA ZAMANLAMASI: Haşlanmış makarnayı soğutup 'Makarna Salatası' (lor peyniri, zeytinyağı, ceviz, kapya biberle) yaparsan veya soğuduktan sonra tekrar ısıtırsan, nişastası 'Tip-3 Dirençli Nişasta'ya dönüşür ve kan şekeri zıplamasını %50 azaltır!",
+        wrongMethod: "Makarnayı 15-20 dk haşlayıp hamur gibi yapmak, haşlama suyunu lavaboya dökmek ve yanında ekmek yemek.",
+        storage: "Kuru paket kilerde 2 yıl sıfır fireyle dayanır.",
+        molecules: ["Pektin & Dirençli Nişasta", "Tam Protein (Whey, Lösin & Metiyonin)", "Selenyum & İyot", "B12 & B Grubu (B1/B6)"],
+        systems: ["Bağırsak & Sindirim", "Kas & Bağ Dokusu"]
+      },
       {
         id: "karabugday",
         name: "Karabuğday (Greçka - Kavrulmamış)",
@@ -1835,6 +1986,142 @@
         storage: "Kuru cam kavanozda içine 1-2 defne yaprağı koyarak (böceklenmeyi önler) 1-2 yıl.",
         molecules: ["Pektin & Dirençli Nişasta", "Tam Protein (Whey, Lösin & Metiyonin)"],
         systems: ["Kas & Bağ Dokusu"]
+      },
+
+      // ==================== ⚡ HAZIR & PRATİK GIDALAR (AÇ-TÜKET & YASAKLAR) ====================
+      {
+        id: "zeytin_zeytinyagi",
+        name: "Doğal Zeytin & Soğuk Sıkım Sızma Zeytinyağı",
+        category: "⚡ Hazır & Pratik",
+        tier: 1,
+        score: 98,
+        portion: "Günde 5-8 adet Zeytin + 2 yemek kaşığı Sızma Zeytinyağı",
+        surprise: "Zeytin ve soğuk sıkım sızma zeytinyağındaki 'Oleuropein ve Hidroksitirozol' damar duvarını gençleştiren en güçlü Akdeniz polifenolleridir. Gerçek sızma zeytinyağını yutarken genzinde oluşan o hafif YANMA VE ÖKSÜRTME HİSSİ, 'Oleokantal' adlı molekülden gelir ve vücutta tıpkı ağrı kesici İbuprofen gibi kronik iltihabı söndürür!",
+        selection: "BOYA HİLESİ TESTİ: Marketlerdeki simsiyah, parlak zeytinlerin çoğu yeşil zeytinin kostik ve 'Demir Glukonat (E579 - siyahlaştırıcı kimyasal)' ile boyanmasıyla yapılır! NASIL ANLARSIN? Zeytini yediğinde ÇEKİRDEĞİ DE SİMSİYAHSA boyalıdır! Doğal fermente zeytinin rengi kahverengi/mordur ve çekirdeği odun rengindedir. En yüksek polifenol için 'Doğal Kırma/Çizik Yeşil Zeytin' veya 'Soğuk Sıkım (Erken Hasat) Sızma Zeytinyağı' (koyu renkli cam/teneke şişede) seç.",
+        constraintNote: "Sıfır hazırlık ister. Tek kısıtı zeytinin tuzudur; suda bekletilerek aşılır.",
+        multiplierBadge: "Tuzunu Suda Alma + Kekik/Limon + Salata Karotenoid Çarpanı",
+        rightMethod: "Zeytin çok tuzluysa bir haftalık porsiyonu kavanoza alıp içme suyunda 1 gece bekletip suyunu dök, üzerine sızma zeytinyağı, kekik ve limon ekle. Sızma zeytinyağını ise sebze ve salataların üzerine eklersen sebzedeki Likopen, Beta-Karoten, Lutein ve K vitamini emilimini 4 ila 5 KATINA çıkarır!",
+        wrongMethod: "Kimyasal boyalı (demir glukonatlı) simsiyah zeytin almak veya sızma zeytinyağını şeffaf plastik şişede güneşte/ocak yanında bekletmek.",
+        storage: "Zeytinyağını ışıktan ve ısıdan uzak, karanlık dolapta ağzı sıkı kapalı sakla.",
+        molecules: ["Oleuropein & Oleokantal", "E Vitamini"],
+        systems: ["Damar & Kolajen", "Beyin & Odaklanma", "İltihap Düşürme", "Karaciğer & Detoks"]
+      },
+      {
+        id: "sekersiz_findik_ezmesi",
+        name: "%100 Şekersiz Fındık / Fıstık Ezmesi (Evde 10 Sn Çokokrem Hilesi)",
+        category: "⚡ Hazır & Pratik",
+        tier: 1,
+        score: 95,
+        portion: "Günde 1 tatlı - 1 yemek kaşığı",
+        surprise: "Canın tatlı veya sürülebilir çikolata çektiğinde seni zehirli palm yağı ve şeker bombalarından (Nutella/Çokokrem) kurtaran 1 numaralı hazır gıdadır! İçinde sadece %100 ezilmiş fındık (veya yer fıstığı) vardır; sıfır ilave şeker, sıfır palm yağı, yüksek E vitamini ve sağlıklı oleik asit içerir.",
+        selection: "İçindekiler kısmında SADECE '%100 Fındık' veya '%100 Yer Fıstığı' yazan cam kavanoz ürünleri seç (Üzerinde yağ ayrışması olması doğal ve katkısız olduğunun kanıtıdır, kaşıkla karıştır).",
+        constraintNote: "Kapağını açıp 5 saniyede elma diliminin veya ekşi mayalı ekmeğin üzerine sürülür.",
+        multiplierBadge: "10 Saniyede 'Ev Yapımı Biyo-Çokokrem' Formülü!",
+        rightMethod: "EVDE 10 SANİYEDE SAĞLIKLI NUTELLA/ÇOKOKREM YAPIMI:\nKüçük bir kasede 1 yemek kaşığı %100 Şekersiz Fındık Ezmesi (veya Tahin) + 1 çay kaşığı Doğal (Ham) Toz Kakao + Çeyrek çay kaşığı Tarçın (tatlandırmak istersen yarım çay kaşığı gerçek bal/pekmez veya çatalla ezilmiş çeyrek muz/yaş incir) karıştır! Ortaya çıkan krema marketteki çikolata kremalarından 10 kat daha lezzetli, sıfır palm yağlı ve damar açıcı bir polifenol bombasıdır!",
+        wrongMethod: "Üzerinde 'Şekersiz/Fit' yazdığı halde içinde Maltitol, Sorbitol (gaz yapıcı tatlandırıcılar) veya bitkisel nebati yağ bulunan ezmeleri almak.",
+        storage: "Açıldıktan sonra buzdolabında 3-4 ay taze kalır.",
+        molecules: ["E Vitamini", "Magnezyum", "Epikateşin & Teobromin"],
+        systems: ["Damar & Kolajen", "Beyin & Odaklanma", "Kas & Bağ Dokusu"]
+      },
+      {
+        id: "konserve_sardalya",
+        name: "Zeytinyağlı Sardalya / Uskumru Фиleto (Cam Kavanoz / Kutu)",
+        category: "⚡ Hazır & Pratik",
+        tier: 1,
+        score: 94,
+        portion: "Haftada 1-2 kez 1 kutu/kavanoz (100-120g)",
+        surprise: "Eve yorgun geldiğinde ve yemek pişirmeye 1 dakikan bile olmadığında kapağını açıp 5 saniyede yiyebileceğin en temiz hazır proteindir! Konserve Ton Balığının aksine küçük balık olduğu için CIVA VE AĞIR METAL RİSKİ SIFIRDIR; doğrudan aktif EPA/DHA Omega-3, D vitamini, Koenzim Q10 ve kalsiyum verir.",
+        selection: "Ayçiçek yağında olanları değil, 'Zeytinyağlı Sardalya veya Uskumru' (mümkünse cam kavanozda satılanları, örn: Dardanel/yerli cam kavanoz serileri) seç.",
+        constraintNote: "Sıfır pişirme, sıfır bulaşık, sıfır koku, 3 yıl raf ömrü.",
+        multiplierBadge: "Roka + Limon + Mor Soğan (30 Saniyelik Öğün)",
+        rightMethod: "Kavanozu aç, yanına yarım demet çiğ roka, 1 küçük mor soğan, bol limon ve sumak ekle; 30 saniyede 25g en kaliteli protein ve Omega-3 öğünün hazır!",
+        wrongMethod: "Ağır metal (cıva) biriktiren büyük avcı balıklardan yapılan ucuz ton balığı konservelerini sık tüketmek.",
+        storage: "Kilerde oda sıcaklığında 2-3 yıl bozulmadan durur.",
+        molecules: ["EPA/DHA Omega-3", "D Vitamini", "Koenzim Q10", "Kalsiyum", "Selenyum & İyot", "Tam Protein (Whey, Lösin & Metiyonin)", "B12 & B Grubu (B1/B6)", "Glisin & Kolajen"],
+        systems: ["Beyin & Odaklanma", "Damar & Kolajen", "Kas & Bağ Dokusu", "Kemik & Tiroid"]
+      },
+      {
+        id: "kavanoz_bakliyat_sebze",
+        name: "Cam Kavanoz Haşlanmış Nohut/Mercimek, Köz Kapya & Çanak Enginar",
+        category: "⚡ Hazır & Pratik",
+        tier: 1,
+        score: 92,
+        portion: "1 su bardağı / 1 kavanoz",
+        surprise: "12 saat ıslatma, haşlama veya fırında biber közleme zahmetini (İşleme Kısıtını) tamamen sıfırlar! Cam kavanozdaki haşlanmış nohut/yeşil mercimek, közlenmiş kapya biber ve su içindeki soyulmuş çanak enginar; kapağını açtığın anda 1 dakikada salata veya yemeğe dönüşür.",
+        selection: "KRİTİK KURAL: İç yüzeyinde hormon bozucu BPA (Bisfenol-A) kaplaması bulunan teneke kutular yerine mutlaka 'CAM KAVANOZ' ürünleri seç.",
+        constraintNote: "Yorgun günlerde dışarıdan sağlıksız yemek söylemeni engelleyen mutfak sigortasıdır.",
+        multiplierBadge: "Sudan Geçir + Tahin/Limon/Zeytinyağı Sosu (1 Dk Piyaz)",
+        rightMethod: "Cam kavanoz haşlanmış nohudu/mercimeği süzgeçte 5 saniye sudan geçir (fazla tuzunu ve gaz yapıcı suyunu at), üzerine hazır közlenmiş kapya biber doğra, 1 kaşık tahin, limon, kimyon, sumak ve zeytinyağı gezdir. 60 saniyede kusursuz öğün!",
+        wrongMethod: "Teneke konserve almak veya kavanozun içindeki bulanık salamura suyunu süzmeden kullanmak.",
+        storage: "Kilerde 1-2 yıl; kapağı açıldıktan sonra buzdolabında 3-4 gün.",
+        molecules: ["Folat (B9)", "Likopen & Lutein", "Sinarin & Silimarin"],
+        systems: ["Bağırsak & Sindirim", "Karaciğer & Detoks", "Damar & Kolajen"]
+      },
+      {
+        id: "leblebi_cavdar_gevregi",
+        name: "Sarı / Beyaz Leblebi & Tam Çavdar Gevreği (Wasa vb.)",
+        category: "⚡ Hazır & Pratik",
+        tier: 3,
+        portion: "1 küçük avuç Leblebi veya 2 dilim Tam Çavdar Gevreği",
+        surprise: "Çekmecede veya çantada aylarca bozulmadan duran, bisküvi/cips/kraker krizini sıfır trans yağ ve yüksek prebiyotik lifle çözen acil durum hazır gıdalarıdır. Leblebi aslında kavrulmuş nohuttur; mide asidini (reflü yanmasını) anında emen doğal bir süngerdir.",
+        selection: "Şeker kaplamalı veya soslu/kızartılmış leblebi değil, sade 'Sarı veya Beyaz Leblebi' seç. Gevrekte ise %100 tam çavdar unu ve tuzdan oluşan katkısız olanları al.",
+        constraintNote: "Kuru olduğu için mutlaka su veya ayran/kefir ile tüketilmelidir.",
+        multiplierBadge: "Lor Peyniri / Zeytinyağı Eşleşmesi",
+        rightMethod: "Tam çavdar gevreğinin üzerine tatlı lor peyniri, zeytinyağı, çörek otu ve 1 dilim kapya biber koyarak ekmeksiz, küflenmeyen çıtır sandviç yap.",
+        wrongMethod: "Paketli palm yağlı tuzlu krakerler, galetalar veya mısır cipsleri yemek.",
+        storage: "Kuru dolapta 1 yıl bayatlamadan durur.",
+        molecules: ["Pektin & Dirençli Nişasta"],
+        systems: ["Bağırsak & Sindirim"]
+      },
+
+      // ==================== 🚫 YASAKLI HAZIR GIDALAR (NUTELLA, ÇOKOKREM, ŞARKÜTERİ VB.) ====================
+      {
+        id: "yasak_nutella_cokokrem",
+        name: "🚫 YASAK: Nutella, Çokokrem ve Kakaolu Fındık Kremaları",
+        category: "⚡ Hazır & Pratik",
+        tier: 4,
+        portion: "0 Gram (Eve Sokulmamalı!)",
+        surprise: "NEDEN KIRMIZI ÇİZGİ VE YASAKTIR? (3 BİYOLOJİK YIKIM):\n1) KAVANOZUN YARISI SAF ŞEKERDİR (%55-58): 'Fındık ve süt' reklamıyla satılır ama 1 numaralı maddesi beyaz şekerdir (2 yemek kaşığında 5 küp şeker vardır!). Sabah yenildiğinde insülini patlatır, karaciğeri yağlandırır ve 1 saat sonra beyni uyuşturup tekrar acıktırır.\n2) KANSEROJEN PALM YAĞI TUZAĞI (3-MCPD & Glisidil Esterleri): Fındık yağı pahalı olduğu için kavanozun %20-25'i 'Rafine Palm Yağı' ile doldurulur. Palm yağı kokusunu almak için 200°C üzerinde işlendiğinde, Avrupa Gıda Güvenliği Otoritesi'nin (EFSA) DNA hasarı yapıcı (genotoksik/kanserojen) ve böbrek toksini olarak ilan ettiği '3-MCPD ve Glisidil yağ asidi esterleri' oluşur!\n3) ÖLÜ İÇERİK: İçindeki sadece %13'lük fındık aşırı kavrulduğu için E vitamini ölmüştür, kakaosu ise alkalize edildiği için damar açıcı flavanolü kalmamıştır.",
+        selection: "Market reyonunda içinde 'Şeker, Bitkisel Yağ (Palm), Peynir Altı Suyu Tozu, Emülgatör (Soya Lesitini), Aroma Verici (Vanilin)' yazan hiçbir kavanozu sepete atma!",
+        constraintNote: "Fiyatı pahalıdır, besin değeri sıfırdır ve hücresel iltihap (inflamasyon) tetikleyicisidir.",
+        multiplierBadge: "✅ 10 Saniyelik Gerçek Alternatifi: %100 Fındık Ezmesi + Doğal Kakao",
+        rightMethod: "BUNUN YERİNE NE YEMELİ?\nHemen üstteki '%100 Şekersiz Fındık Ezmesi' (veya Tahin) kartındaki formülü uygula: 1 yemek kaşığı %100 Fındık Ezmesi + 1 çay kaşığı Doğal (Ham) Toz Kakao + Çeyrek çay kaşığı Tarçın + (İsteğe bağlı yarım çay kaşığı bal/pekmez veya ezilmiş muz). 10 saniyede sıfır palm yağlı, %85 gerçek fındıklı, damar açıcı gerçek çikolata kreması elde edersin!",
+        wrongMethod: "Çocuklara veya kendine 'enerji verir / fındıklıdır' diyerek kahvaltıda Nutella, Çokokrem veya benzeri palm yağlı kremaları yedirmek.",
+        storage: "Evde varsa vedalaş.",
+        molecules: ["E Vitamini", "Epikateşin & Teobromin"],
+        systems: ["Karaciğer & Detoks", "Damar & Kolajen", "Bağırsak & Sindirim"]
+      },
+      {
+        id: "yasak_sarkuteri_eritme",
+        name: "🚫 YASAK: Salam, Sosis, Isıl İşlemli Sucuk & Eritme/Üçgen Peynirler",
+        category: "⚡ Hazır & Pratik",
+        tier: 4,
+        portion: "0 Gram (Kırmızı Çizgi!)",
+        surprise: "NEDEN KIRMIZI ÇİZGİ VE YASAKTIR?\n1) SODYUM NİTRİT (E250) VE KANSEROJEN NİTROZAMİN: Salam, sosis, jambon ve ucuz ısıl işlem görmüş sucuklara pembe/kırmızı rengini koruması için 'Sodyum Nitrit (E250)' katılır. Bu madde mide asidinde ve tavada kızardığında doğrudan kalın bağırsak (kolon) kanseri tetikleyicisi olan 'N-Nitrozaminlere' dönüşür! (Dünya Sağlık Örgütü işlenmiş etleri sigarayla aynı Grup-1 kanserojen sınıfına koymuştur).\n2) ERİTME PEYNİR VE FOSFAT TUZU TUZAĞI: Üçgen peynirler, sürülebilir krem peynirler ve ucuz 'tost peynirleri' gerçek peynir değildir; iade peynirlerin 'Emülsifiye Edici Fosfat Tuzları (E339, E452)' ile kazanda eritilmesiyle yapılır! İnorganik fosfatlar bağırsaktan %100 emilir, damarları kireçlendirir ve kemiklerden kalsiyum çalar!",
+        selection: "Etikette 'Sodyum Nitrit (E250), Monosodyum Glutamat (MSG - E621), Eritme Tuzları (Polifosfatlar)' ve 'Tost Peyniri / Eritme Peyniri' yazan ürünlerden uzak dur.",
+        constraintNote: "Hazır kahvaltılık ve sandviç reyonunun en tehlikeli iki tuzağıdır.",
+        multiplierBadge: "✅ Gerçek Alternatif: Tatlı Lor, Şirden Mayalı Ezine & Baharatlı Kıyma",
+        rightMethod: "BUNUN YERİNE NE YEMELİ?\n1) Eritme/krem peynir yerine: Tatlı Lor Peyniri + Süzme Yoğurt + Zeytinyağı + Çörek otunu karıştır (sürülebilir en temiz krem peynir olur) veya gerçek Ezine peyniri al.\n2) Sucuk/Salam yerine: Az yağlı kıymaya evde sarımsak, kimyon, yenibahar, karabiber ve toz kırmızı biber yoğurup 'Ev Yapımı Köfte/Sucuk İçi' yap (Sıfır nitrit!).",
+        wrongMethod: "Sucuk ve sosisi yağda yakarak kızartmak (nitrozamin oluşumunu 10 katına çıkarır) ve tostta eritme peyniri kullanmak.",
+        storage: "Tüketme.",
+        molecules: ["Tam Protein (Whey, Lösin & Metiyonin)", "Kalsiyum"],
+        systems: ["Bağırsak & Sindirim", "Damar & Kolajen", "Kemik & Tiroid"]
+      },
+      {
+        id: "yasak_meyveli_yogurt_cips",
+        name: "🚫 YASAK: Hazır Meyveli Yoğurtlar, Paketli Granola, Cips & Hazır Çorba",
+        category: "⚡ Hazır & Pratik",
+        tier: 4,
+        portion: "0 Gram (Kırmızı Çizgi!)",
+        surprise: "NEDEN KIRMIZI ÇİZGİ VE YASAKTIR?\n1) 'SAĞLIKLI' MASKELEMESİ: Diyet/sağlık reyonundaki hazır 'Meyveli Yoğurt/Kefir' ve 'Fit Granola/Mısır Gevrekleri'nde 1 kasede 4-5 küp şeker (glukoz-fruktoz şurubu) ve modifiye nişasta vardır.\n2) HAZIR ÇORBA VE BÜLYONLAR (MSG + MALTODEKSTRİN): Poşet hazır çorbalar ve et bulyonlarda beynin tokluk merkezini bozan 'Monosodyum Glutamat (Çin tuzu)', glisemik indeksi beyaz şekerden bile yüksek olan (GI: 110!) 'Maltodekstrin' ve trans yağlar bulunur.\n3) CİPS VE KRAKERLER: Yüksek ısıda kızartılmış nişasta 'Akrilamid' (nörotoksin) ve okside Omega-6 içerir.",
+        selection: "İçindekiler listesinde 3'ten fazla madde olan ve ev mutfağında bulunmayan kelimeler (Maltodekstrin, Glukoz Şurubu, Modifiye Nişasta, MSG, Palm Yağı) içeren paketleri bırak.",
+        constraintNote: "Bağırsak mukozasını (sızdıran bağırsak) ve insülin dengesini doğrudan bozar.",
+        multiplierBadge: "✅ Gerçek Alternatif: Sade Kefir/Yoğurt + Sade Yulaf + Kemik Suyu",
+        rightMethod: "BUNUN YERİNE NE YEMELİ?\n1) Meyveli yoğurt/granola yerine: Sade yoğurt veya kefirin içine sade yulaf ezmesi, ceviz, tarçın ve yarım elma/çilek doğra.\n2) Hazır çorba/bulyon yerine: Dondurucudaki gerçek kemik suyu bardaklarını ve kırmızı mercimeği (15 dk) kullan.",
+        wrongMethod: "Sağlıklı sanıp mısır gevreği, meyveli yoğurt veya hazır çorba tüketmek.",
+        storage: "Tüketme.",
+        molecules: ["Kefiran & Canlı Probiyotik", "Avenantramid & Beta-Glukan"],
+        systems: ["Bağırsak & Sindirim", "Beyin & Odaklanma"]
       },
 
       // ==================== BAHARATLAR ====================
@@ -1917,8 +2204,8 @@
         surprise: "Pahalı ve şekerli/kalorili bitter çikolata almana hiç gerek yok! Pasta reyonundaki saf toz kakao çok ucuzdur; içindeki 'Epikateşin' damarlarda Nitrik Oksit üreterek tansiyonu dengeler ve beyin hafıza merkezine (hipokampüs) kan akışını hızlandırır.",
         selection: "ETİKET HİLESİ: Paketin arkasında 'Alkalize edilmiştir (Asitliği düzenlenmiş / Dutch-processed)' yazan koyu siyah kakaoları ALMA! Bu işlem kakaodaki faydalı flavanollerin %75'ini yok eder. Rengi açık kahverengi olan 'Doğal / Ham Toz Kakao' seç.",
         constraintNote: "1 tatlı kaşığı sadece 12 kaloridir, sıfır şekerdir, aylarca bozulmaz.",
-        multiplierBadge: "Sütsüz / Su, Kahve veya Yulaf İle Tüketim",
-        rightMethod: "1 tatlı kaşığı doğal kakaoyu Türk kahvesinin/filtre kahvenin içine, sıcak suya veya sabah yulafına karıştırıp tüket. İnek sütündeki kazein proteini kakao flavanollerini kısmen bağladığı için suyla veya kahveyle sade içmek damar açıcı etkiyi maksimize eder.",
+        multiplierBadge: "Sütsüz / Kahve, Yulaf veya Fındık Ezmesi İle Tüketim",
+        rightMethod: "1 tatlı kaşığı doğal kakaoyu Türk kahvesinin/filtre kahvenin içine, sıcak suya, sabah yulafına veya %100 şekersiz fındık ezmesine (ev yapımı çokokrem olarak) karıştırıp tüket. İnek sütündeki kazein proteini kakao flavanollerini kısmen bağladığı için sütsüz tüketmek damar açıcı etkiyi maksimize eder.",
         wrongMethod: "Şekerli hazır sıcak çikolata tozları veya alkalize kakao kullanmak.",
         storage: "Serin, kuru dolapta.",
         molecules: ["Epikateşin & Teobromin", "Magnezyum"],
@@ -1963,6 +2250,24 @@
     // ==================== REYON TUZAKLARI (NEDEN ELENDİ?) ====================
     const TRAPS_DB = [
       {
+        name: "Nutella, Çokokrem ve Benzeri Kakaolu Fındık Kremaları",
+        category: "Hazır Gıda & Kahvaltı Tuzağı",
+        reason: "Kavanozun %55'i saf beyaz şeker, %20'den fazlası ise yüksek ısıda işlenirken kanserojen ve böbrek toksini olan '3-MCPD ve Glisidil Esterleri' üreten Rafine Palm Yağıdır! İçindeki %13'lük fındık kavrulmuş, kakaosu ise alkalize edilmiştir.",
+        alternative: "1 yemek kaşığı %100 Şekersiz Fındık Ezmesi (veya Tahin) + 1 çay kaşığı Doğal Ham Toz Kakao + Tarçın (10 saniyede sıfır palm yağlı gerçek çikolata kreması!)."
+      },
+      {
+        name: "Salam, Sosis, Isıl İşlemli Sucuk & Eritme/Üçgen Peynirler",
+        category: "Şarküteri Tuzağı",
+        reason: "İşlenmiş etlerdeki Sodyum Nitrit (E250) midede ve ısıda kolon kanseri yapıcı 'Nitrozaminlere' dönüşür. Üçgen/krem/tost eritme peynirlerindeki 'Fosfat Tuzları' ise damarları kireçlendirir ve kemikten kalsiyum çalar.",
+        alternative: "Tatlı Lor Peyniri, Şirden Mayalı Ezine Peyniri, Yumurta ve evde baharatlarla yoğrulmuş katkısız kıyma köftesi."
+      },
+      {
+        name: "Kostik ve Demir Glukonat (E579) ile Boyanmış Simsiyah Zeytinler",
+        category: "Kahvaltılık Tuzağı",
+        reason: "Olgunlaşmamış yeşil zeytinlerin kostik (sodyum hidroksit) ile acılığı alınıp 'Demir Glukonat' ile simsiyah boyanmasıyla yapılır (Çekirdeği de simsiyahsa boyalıdır). Polifenolleri büyük oranda kaybolmuştur.",
+        alternative: "Çekirdeği odun rengi olan doğal fermente mor/kahverengi zeytin veya Kırma/Çizik Yeşil Zeytin + Soğuk Sıkım Sızma Zeytinyağı."
+      },
+      {
         name: "Beyaz Fırın Ekmeği, Simit & Poğaça",
         category: "Tahıl & Ekmek Tuzağı",
         reason: "Yumuşak buğday ununun hızlı endüstriyel mayayla şişirilmesiyle yapılır; gözenekli yapısı midede dakikalar içinde saf glukoza dönüşür (GI: 80+), insülini zıplatır, 2 saat sonra acıktırır ve 2 günde küflenir.",
@@ -1972,19 +2277,19 @@
         name: "Göbek Marul (Iceberg) & Kıvırcık",
         category: "Sebze Tuzağı",
         reason: "Göbek marulun %95'i sudur; koca kase yersin miden şişer ama vitamin neredeyse sıfırdır. Kıvırcık ise yıkarken yaprak kıvrımlarındaki kum/böcek yüzünden çok vakit alır ve dolapta 3 günde çürüyüp fire verir.",
-        alternative: "Mor Lahana (3 hafta çürümez, 30 saniyede doğranır, 10 kat besleyici) ve Roka/Tere."
+        alternative: "Mor Lahana, Beyaz Lahana (1 ay çürümez, 30 saniyede doğranır, 10 kat besleyici), Roka, Tere ve Maydanoz."
       },
       {
         name: "Avokado, Ejder Meyvesi ve Mango",
         category: "Fiyat & Pratiklik Tuzağı",
         reason: "Avokado çok pahalıdır ve 5 gün taş gibi bekleyip 1 günde kararır (pratiklik kısıtı). Ejder meyvesinde polifenol mor lahananın onda biri bile değildir.",
-        alternative: "Avokado yağı ve E vitamini yerine Sızma Zeytinyağı, Çiğ Fındık ve Ayçekirdeği İçi."
+        alternative: "Avokado yağı ve E vitamini yerine Soğuk Sıkım Sızma Zeytinyağı, Çiğ Fındık ve Ayçekirdeği İçi."
       },
       {
         name: "Çiftlik Somonu ve Konserve Ton Balığı",
         category: "Balık Reyonu Tuzağı",
         reason: "İthal çiftlik somonu aşırı pahalıdır. Ton balığı ise uzun ömürlü büyük avcı balık olduğu için denizdeki cıva ve ağır metalleri biriktirir.",
-        alternative: "Sardalya, Hamsi, Uskumru ve İstavrit (Dörtte biri fiyatına, sıfır cıva, maksimum EPA/DHA Omega-3 ve Koenzim Q10)."
+        alternative: "Taze veya Cam Kavanoz Sardalya, Hamsi, Uskumru ve İstavrit (Dörtte biri fiyatına, sıfır cıva, maksimum EPA/DHA Omega-3 ve Koenzim Q10)."
       },
       {
         name: "Bütün Susam ve Çiğ Keten/Çörek Otu Yutmak",
@@ -2011,6 +2316,7 @@
         "Kuruyemiş & Tohum",
         "Bakliyat",
         "Tahıl & Ekmek",
+        "⚡ Hazır & Pratik",
         "Baharat",
         "İçecek",
         "🚫 Tuzaklar"
@@ -2144,13 +2450,16 @@
 
     function buildFoodCardHTML(item) {
       const inCart = shoppingCart.some(c => c.id === item.id);
+      const isForbidden = item.tier === 4;
       let badgeHTML = "";
       if (item.tier === 1) {
         badgeHTML = `<span class="score-badge">🏆 ${item.score} Puan</span>`;
       } else if (item.tier === 2) {
         badgeHTML = `<span class="specialist-badge">💎 ${item.specialistTarget || "Özel Görev"}</span>`;
-      } else {
+      } else if (item.tier === 3) {
         badgeHTML = `<span class="secondary-badge">⚖️ 2. Derece (Şartlı)</span>`;
+      } else if (isForbidden) {
+        badgeHTML = `<span class="forbidden-badge">🚫 KIRMIZI ÇİZGİ / YASAK</span>`;
       }
 
       const detailedBenefitsHTML = item.molecules.map(mName => {
@@ -2165,10 +2474,10 @@
       }).join("");
 
       return `
-        <div class="card" id="food-card-${item.id}">
+        <div class="card ${isForbidden ? 'trap-card' : ''}" id="food-card-${item.id}">
           <div class="card-header">
             <div class="card-title-area">
-              <span class="category-tag">${item.category}</span>
+              <span class="category-tag" style="${isForbidden ? 'color:var(--danger);' : ''}">${item.category}</span>
               <div class="card-title">
                 ${item.name}
                 ${badgeHTML}
@@ -2177,18 +2486,22 @@
                 📏 İdeal Porsiyon: <strong>${item.portion}</strong>
               </div>
             </div>
-            <button class="add-cart-btn ${inCart ? 'in-cart' : ''}" onclick="toggleCartItem('${item.id}', '${item.name.replace(/'/g, "\\'")}')">
-              ${inCart ? '✓ Sepette' : '+ Sepet'}
-            </button>
+            ${!isForbidden ? `
+              <button class="add-cart-btn ${inCart ? 'in-cart' : ''}" onclick="toggleCartItem('${item.id}', '${item.name.replace(/'/g, "\\'")}')">
+                ${inCart ? '✓ Sepette' : '+ Sepet'}
+              </button>
+            ` : ''}
           </div>
 
-          <div class="info-box box-surprise">
-            <span class="box-label" style="color:var(--accent);">💡 Şaşırtıcı Gerçek & Biyolojik Gücü</span>
+          <div class="info-box ${isForbidden ? 'box-wrong' : 'box-surprise'}">
+            <span class="box-label" style="color:${isForbidden ? 'var(--danger)' : 'var(--accent)'};">
+              ${isForbidden ? '🚨 Neden Yasak? (Biyolojik Hasar Analizi)' : '💡 Şaşırtıcı Gerçek & Biyolojik Gücü'}
+            </span>
             ${item.surprise.replace(/\n/g, "<br>")}
           </div>
 
           <div class="info-box box-pick">
-            <span class="box-label" style="color:var(--info);">🔍 Reyonda Seçim & Hile Uyarısı</span>
+            <span class="box-label" style="color:var(--info);">🔍 Reyonda Seçim & Etiket Uyarısı</span>
             ${item.selection}
           </div>
 
@@ -2204,10 +2517,10 @@
           <!-- 2 Akıllı Aksiyon Butonu -->
           <div class="card-action-bar">
             <button class="action-toggle-btn" id="btn-kitchen-${item.id}" onclick="toggleDrawer('${item.id}', 'kitchen')">
-              🍽️ Mutfak & Tüketim
+              ${isForbidden ? '🔄 Sağlıklı Alternatifi' : '🍽️ Mutfak & Tüketim'}
             </button>
             <button class="action-toggle-btn" id="btn-benefits-${item.id}" onclick="toggleDrawer('${item.id}', 'benefits')">
-              🧬 Tüm Faydaları (${item.molecules.length})
+              🧬 İlgili Moleküller (${item.molecules.length})
             </button>
           </div>
 
@@ -2243,7 +2556,7 @@
       if (searchQuery) {
         const results = FOODS_DB.filter(matchesSearch);
         mainContent.innerHTML = results.length
-          ? `<div class="section-banner"><strong>🔍 Arama Sonuçları (${results.length} gıda bulundu):</strong></div>` + results.map(buildFoodCardHTML).join("")
+          ? `<div class="section-banner"><strong>🔍 Arama Sonuçları (${results.length} kayıt bulundu):</strong></div>` + results.map(buildFoodCardHTML).join("")
           : `<div class="empty-state">Aramanızla eşleşen gıda bulunamadı.</div>`;
         return;
       }
@@ -2251,7 +2564,7 @@
       if (activeFilter === "🚫 Tuzaklar") {
         let html = `
           <div class="section-banner" style="border-left-color: var(--danger);">
-            <strong>🚫 6 Kriter Eleğine Takılan Reyon Tuzakları:</strong> Popüler olduğu halde fiyat, hacim, ilaç yükü veya sıfır emilim nedeniyle elenen gıdalar ve doğru alternatifleri.
+            <strong>🚫 6 Kriter Eleğine Takılan Reyon Tuzakları & Yasaklar:</strong> Popüler olduğu halde şeker, palm yağı, nitrit, fiyat, hacim veya sıfır emilim nedeniyle elenen ürünler ve doğru alternatifleri.
           </div>
         `;
         html += TRAPS_DB.map(t => `
@@ -2259,7 +2572,7 @@
             <span class="category-tag" style="color:var(--danger);">${t.category}</span>
             <div class="card-title" style="margin-bottom:8px;">❌ ${t.name}</div>
             <div class="info-box box-wrong">
-              <span class="box-label" style="color:var(--danger);">Neden Elendi? (Kısıt Analizi)</span>
+              <span class="box-label" style="color:var(--danger);">Neden Elendi / Yasaklandı? (Kısıt & Toksisite Analizi)</span>
               ${t.reason}
             </div>
             <div class="info-box box-right">
@@ -2276,6 +2589,7 @@
       const tier1 = categoryItems.filter(f => f.tier === 1).sort((a, b) => (b.score || 0) - (a.score || 0));
       const tier2 = categoryItems.filter(f => f.tier === 2);
       const tier3 = categoryItems.filter(f => f.tier === 3);
+      const tier4 = categoryItems.filter(f => f.tier === 4);
 
       let html = "";
 
@@ -2293,7 +2607,7 @@
         html += `
           <div class="tier-header tier-2">
             <div>💎 Özel Görev Gıdaları (İkamesiz Uzmanlar)</div>
-            <span class="tier-sub">İçerdiği özel etken madde başka hiçbir gıdada bulunmadığı için belirli organları onarmak adına haftalık alınanlar.</span>
+            <span class="tier-sub">İçerdiği özel etken madde başka hiçbir gıdada bulunmadığı için belirli organları onarmak adına alınanlar.</span>
           </div>
           ${tier2.map(buildFoodCardHTML).join("")}
         `;
@@ -2306,6 +2620,16 @@
             <span class="tier-sub">Alışkanlıkla sık alınan ancak şeker yükü, hazırlık veya gaz kısıtı nedeniyle özel mutfak kuralıyla yenmesi gerekenler.</span>
           </div>
           ${tier3.map(buildFoodCardHTML).join("")}
+        `;
+      }
+
+      if (tier4.length > 0) {
+        html += `
+          <div class="tier-header tier-4">
+            <div>🚫 Kırmızı Çizgi: Yasaklı Hazır Gıdalar (Asla Alma!)</div>
+            <span class="tier-sub">Yüksek şeker, kanserojen palm yağı (3-MCPD), nitrit veya fosfat tuzu içeren paketli tuzaklar ve 10 saniyelik ev alternatifleri.</span>
+          </div>
+          ${tier4.map(buildFoodCardHTML).join("")}
         `;
       }
 
@@ -2367,7 +2691,7 @@
         return;
       }
 
-      const matchingFoods = FOODS_DB.filter(f => f.systems.includes(activeFilter));
+      const matchingFoods = FOODS_DB.filter(f => f.systems.includes(activeFilter) && f.tier !== 4);
       let html = `
         <div class="section-banner">
           <strong>🩺 Hedef Sistem (${activeFilter}):</strong> Bu organ/sistemi doğrudan onaran gıdalar (Mutfak ve fayda detayları için kartın altındaki butonlara dokun).
@@ -2383,14 +2707,13 @@
 
       if (mol.rankedSources && mol.rankedSources.length > 0) {
         mol.rankedSources.forEach(foodId => {
-          const found = FOODS_DB.find(f => f.id === foodId);
+          const found = FOODS_DB.find(f => f.id === foodId && f.tier !== 4);
           if (found) orderedFoods.push(found);
         });
       }
 
-      // Eğer rankedSources dışında bu molekülü içeren başka gıda varsa sona ekle
       FOODS_DB.forEach(f => {
-        if (f.molecules.includes(mol.name) && !orderedFoods.some(o => o.id === f.id)) {
+        if (f.tier !== 4 && f.molecules.includes(mol.name) && !orderedFoods.some(o => o.id === f.id)) {
           orderedFoods.push(f);
         }
       });
