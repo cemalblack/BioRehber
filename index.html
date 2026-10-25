@@ -2885,7 +2885,7 @@
     renderMain();
   </script>
   <!-- =====================================================================
-       KARA LİSTE MADDESİ VE MARKASI ETİKET TARAYICI MODÜLÜ (GÜÇLENDİRİLMİŞ OCR)
+       AKILLI ETİKET, KARA LİSTE VE 6'LI BESİN KARNESİ MODÜLÜ (GEMINI FLASH)
        (Ana koda dokunmadan sadece </body> üstüne eklenen bağımsız modül)
        ===================================================================== -->
   <style>
@@ -2926,14 +2926,14 @@
       gap: 12px;
       align-items: center;
       background: var(--bg-card-alt);
-      padding: 10px;
+      padding: 10px 12px;
       border-radius: 12px;
       margin-bottom: 12px;
       border: 1px solid var(--border);
     }
     .cam-preview-img {
-      width: 68px;
-      height: 68px;
+      width: 64px;
+      height: 64px;
       object-fit: cover;
       border-radius: 10px;
       border: 1px solid var(--border);
@@ -2941,7 +2941,7 @@
       display: none;
     }
     .cam-status-text {
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       font-weight: 800;
       color: var(--text);
       line-height: 1.35;
@@ -2951,38 +2951,71 @@
       color: var(--text-muted);
       margin-top: 3px;
     }
-    .ocr-readonly-box {
-      margin-top: 12px;
-      padding: 9px 11px;
-      border-radius: 9px;
+    .nutri-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .nutri-pill {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      font-size: 0.79rem;
+      line-height: 1.35;
+    }
+    .nutri-pill.good { border-left: 4px solid var(--primary); }
+    .nutri-pill.warn { border-left: 4px solid var(--accent); }
+    .nutri-pill.bad  { border-left: 4px solid var(--danger); }
+    .api-key-box {
       background: var(--bg-card-alt);
       border: 1px solid var(--border);
-      font-size: 0.74rem;
-      color: var(--text-muted);
-      max-height: 90px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-      user-select: none;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .api-key-input {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.85rem;
+      margin: 8px 0;
+      outline: none;
     }
   </style>
 
-  <!-- Kara Liste Sonuç Modalı -->
+  <!-- Kara Liste & Besin Karnesi Sonuç Modalı -->
   <div class="modal-overlay" id="cameraModal">
     <div class="modal-sheet">
       <div class="modal-header">
         <h3>🚫 Kara Liste Maddesi ve Markası</h3>
-        <div style="display:flex; gap:8px;">
-          <button class="icon-btn" id="retakeCamBtn" style="color:var(--primary);">📷 Tekrar Çek</button>
-          <button class="icon-btn" id="closeCamModalBtn">Kapat ✕</button>
+        <div style="display:flex; gap:6px;">
+          <button class="icon-btn" id="keySettingsBtn" title="Anahtar Ayarı">🔑</button>
+          <button class="icon-btn" id="retakeCamBtn" style="color:var(--primary);">📷 Çek</button>
+          <button class="icon-btn" id="closeCamModalBtn">✕</button>
         </div>
       </div>
       <div class="modal-body">
-        <div class="cam-preview-wrap">
+        <!-- Sadece İlk Seferde Görünecek API Anahtarı Kutusu -->
+        <div class="api-key-box" id="apiKeyBox">
+          <div style="font-size:0.84rem; font-weight:800; color:var(--primary);">🔑 Tek Seferlik Google AI Anahtarı Kurulumu</div>
+          <div style="font-size:0.76rem; color:var(--text-muted); margin-top:4px;">
+            <strong>aistudio.google.com/apikey</strong> adresinden aldığınız ücretsiz anahtarı (<code>AIza...</code>) aşağıya yapıştırın. Telefonunuz bunu kaydeder ve bir daha sormaz.
+          </div>
+          <input type="password" id="apiKeyInput" class="api-key-input" placeholder="AIzaSy... kodunu buraya yapıştırın" />
+          <button class="action-toggle-btn active-kitchen" id="saveApiKeyBtn" style="width:100%;">Kaydet ve Kamerayı Aç</button>
+        </div>
+
+        <div class="cam-preview-wrap" id="camPreviewWrap">
           <img id="camPreviewImg" class="cam-preview-img" src="" alt="Etiket" />
           <div style="flex:1;">
-            <div id="camStatusText" class="cam-status-text">Etiket Taranıyor...</div>
-            <div id="camSubStatus" class="cam-sub-status">Paketin üzerindeki yazılar okunuyor.</div>
+            <div id="camStatusText" class="cam-status-text">Etiket Analize Hazır</div>
+            <div id="camSubStatus" class="cam-sub-status">Marka, içindekiler veya besin tablosunu çekin.</div>
           </div>
         </div>
         <div id="camResultsContainer"></div>
@@ -2993,13 +3026,21 @@
   <script>
     (function() {
       /***********************************************************************
-       * 🛠️ 1. KARA LİSTE MARKALARI VE MADDELERİ (KOLAY EKLEME BÖLÜMÜ)
-       * İleride yeni bir marka veya katkı maddesi eklemek istediğinde
-       * aşağıdaki listelere virgülle yeni bir satır eklemen yeterlidir.
-       * (Türkçe/İngilizce harf veya büyük/küçük harf farklarını kod kendi eşitler)
+       * 🛠️ 1. KULLANICI LİSTELERİ VE BESİN SINIRLARI (KOLAY GÜNCELLEME ALANI)
+       * İstediğin zaman yeni marka, katkı maddesi veya sınır değiştirebilirsin.
        ***********************************************************************/
 
-      // A) KARA LİSTE MARKALARI
+      // A) 100g / 100ml Besin Değeri Kriterlerimiz (Yarım Yağlı & Tuz Korumalı)
+      const BESIN_SINIRLARI = {
+        protein: { yuksek: 12.0, orta: 6.0 },   // >=12g Yeşil | 6-12g Sarı | <6g Kırmızı
+        yag:     { iyiMax: 12.0, ortaMax: 20.0 }, // <=12g Yeşil (Yarım yağlı) | >20g Kırmızı
+        tuz:     { iyi: 0.8,     orta: 1.5 },     // <=0.8g Yeşil | >1.5g Kırmızı
+        seker:   { iyi: 5.0,     orta: 10.0 },    // <=5g Yeşil | >10g Kırmızı
+        kalori:  { iyi: 160,     orta: 300 },     // <=160 kcal Yeşil | >300 kcal Kırmızı
+        lif:     { yuksek: 5.0,  orta: 2.0 }      // >=5g Yeşil | 2-5g Sarı | <2g Kırmızı
+      };
+
+      // B) KARA LİSTE MARKALARI
       const KARA_LISTE_MARKALARI = [
         "nutella",
         "çokokrem",
@@ -3022,7 +3063,7 @@
         "sana"
       ];
 
-      // B) KARA LİSTE MADDELERİ (Kök kelimeler ve açıklaması)
+      // C) KARA LİSTE MADDELERİ
       const KARA_LISTE_MADDELERI = [
         {
           keys: ["palm", "hurma yagi"],
@@ -3082,17 +3123,21 @@
         {
           keys: ["sodyum benzoat", "potasyum sorbat", "kalsiyum sorbat", "e211", "e202", "kukurt dioksit", "e220"],
           name: "Sentetik Koruyucu (E211 / E202 / E220)",
-          desc: "Bağırsak dostu bakterilere zarar veren ve alerjik reaksiyon tetikleyebilen kimyasal koruyucu."
-        },
-        {
-          keys: ["soya lesitin", "polisorbat", "mono ve digliserit", "e471", "e433"],
-          name: "Endüstriyel Emülgatör (E471 / Lesitin)",
-          desc: "Bağırsak mukozasının koruyucu mukus tabakasını inceltebilen katkı maddesi."
+          desc: "Bağırsak dostu bakterilere zarar veren kimyasal koruyucu."
         }
       ];
 
+      // D) KATEGORİ -> BİYOREHBER KARTI YÖNLENDİRMESİ
+      const KATEGORI_HARITASI = {
+        sut:      ["tatli_lor_suzme", "kefir", "yogurt_kefir_peynir"],
+        cikolata: ["sekersiz_findik_ezmesi", "dogal_kakao", "cig_findik", "tahin"],
+        et:       ["sardalya_hamsi_uskumru", "konserve_sardalya", "tavuk_kalca_hindi", "kirmizi_et_kiyma"],
+        tahil:    ["bulgur", "yulaf_ezmesi", "durum_makarna", "karabugday", "leblebi_cavdar_gevregi"],
+        yag:      ["zeytin_zeytinyagi", "kavanoz_bakliyat_sebze", "mercimek_nohut"]
+      };
+
       /***********************************************************************
-       * 🔤 2. AKILLI HARF, BOŞLUK VE E-KODU EŞİTLEYİCİ (NORMALİZASYON)
+       * 🔤 2. HARF EŞİTLEYİCİ YARDIMCI FONKSİYONLAR
        ***********************************************************************/
       function normalizeTR(str) {
         return (str || "")
@@ -3106,39 +3151,23 @@
           .replace(/[çÇ]/g, "c");
       }
 
-      // E-kodlarındaki boşlukları ve kameranın 0->O, 5->S, 2->Z, 1->I hatalarını düzeltir
-      function buildCompactEcodeText(normStr) {
-        const noSpace = normStr.replace(/[^a-z0-9]/g, "");
-        return noSpace.replace(/e([0-9oizsb]{3})/g, (_, code) => {
-          const fixed = code
-            .replace(/o/g, "0")
-            .replace(/[il]/g, "1")
-            .replace(/z/g, "2")
-            .replace(/s/g, "5")
-            .replace(/b/g, "8");
-          return "e" + fixed;
-        });
-      }
-
       function isKeyMatched(normText, compactText, rawKey) {
         const normKey = normalizeTR(rawKey).trim();
         if (!normKey) return false;
         if (normText.includes(normKey)) return true;
-
         const compactKey = normKey.replace(/[^a-z0-9]/g, "");
-        if (compactKey.length >= 4 && compactText.includes(compactKey)) {
-          return true;
-        }
+        if (compactKey.length >= 4 && compactText.includes(compactKey)) return true;
         return false;
       }
 
       /***********************************************************************
-       * ⚙️ 3. BUTON YERLEŞİMİ VE YÜKSEK KONTRASTLI OCR SİSTEMİ
+       * ⚙️ 3. ARAYÜZ VE GEMINI FLASH JSON ANALİZ MOTORU
        ***********************************************************************/
+      const STORAGE_KEY = "biyoRehberGeminiKey";
       const searchBar = document.querySelector(".search-bar");
       const scanBtn = document.createElement("button");
       scanBtn.className = "label-scan-btn";
-      scanBtn.title = "Kara Liste Maddesi ve Markası Kontrolü";
+      scanBtn.title = "Kara Liste ve Besin Değeri Kontrolü";
       scanBtn.innerHTML = "Etiket 📷";
 
       const fileInput = document.createElement("input");
@@ -3151,77 +3180,233 @@
       searchBar.appendChild(fileInput);
 
       const cameraModal = document.getElementById("cameraModal");
+      const apiKeyBox = document.getElementById("apiKeyBox");
+      const apiKeyInput = document.getElementById("apiKeyInput");
       const camPreviewImg = document.getElementById("camPreviewImg");
       const camStatusText = document.getElementById("camStatusText");
       const camSubStatus = document.getElementById("camSubStatus");
       const camResultsContainer = document.getElementById("camResultsContainer");
 
-      scanBtn.addEventListener("click", () => fileInput.click());
-      document.getElementById("retakeCamBtn").addEventListener("click", () => fileInput.click());
+      function getSavedKey() {
+        return (localStorage.getItem(STORAGE_KEY) || "").trim();
+      }
+
+      window.openFoodFromCamera = function(foodId) {
+        cameraModal.classList.remove("open");
+        window.jumpToFoodCard(foodId);
+      };
+
+      scanBtn.addEventListener("click", () => {
+        if (!getSavedKey()) {
+          apiKeyBox.style.display = "block";
+          cameraModal.classList.add("open");
+        } else {
+          apiKeyBox.style.display = "none";
+          fileInput.click();
+        }
+      });
+
+      document.getElementById("saveApiKeyBtn").addEventListener("click", () => {
+        const val = apiKeyInput.value.trim();
+        if (val.length < 15) {
+          alert("Lütfen geçerli bir Google AI anahtarı (AIza...) yapıştırın.");
+          return;
+        }
+        localStorage.setItem(STORAGE_KEY, val);
+        apiKeyBox.style.display = "none";
+        fileInput.click();
+      });
+
+      document.getElementById("keySettingsBtn").addEventListener("click", () => {
+        apiKeyInput.value = getSavedKey();
+        apiKeyBox.style.display = apiKeyBox.style.display === "block" ? "none" : "block";
+      });
+
+      document.getElementById("retakeCamBtn").addEventListener("click", () => {
+        if (!getSavedKey()) apiKeyBox.style.display = "block";
+        else fileInput.click();
+      });
+
       document.getElementById("closeCamModalBtn").addEventListener("click", () => cameraModal.classList.remove("open"));
       cameraModal.addEventListener("click", e => {
         if (e.target === cameraModal) cameraModal.classList.remove("open");
       });
 
-      function loadTesseractScript() {
-        return new Promise((resolve, reject) => {
-          if (window.Tesseract) return resolve(window.Tesseract);
-          const s = document.createElement("script");
-          s.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
-          s.onload = () => resolve(window.Tesseract);
-          s.onerror = reject;
-          document.head.appendChild(s);
-        });
-      }
-
-      // Parlak paketleri ve renkli zeminleri netleştiren piksel filtresi
-      function preprocessCanvasForOCR(imgEl) {
+      function compressImageToBase64(imgEl) {
         const canvas = document.createElement("canvas");
-        const maxDim = 2200;
+        const maxDim = 1100;
         let w = imgEl.naturalWidth || imgEl.width;
         let h = imgEl.naturalHeight || imgEl.height;
-
         if (w > maxDim || h > maxDim) {
           const scale = maxDim / Math.max(w, h);
           w = Math.round(w * scale);
           h = Math.round(h * scale);
-        } else if (Math.max(w, h) < 1200) {
-          const scale = 1500 / Math.max(w, h);
-          w = Math.round(w * scale);
-          h = Math.round(h * scale);
         }
-
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(imgEl, 0, 0, w, h);
+        return canvas.toDataURL("image/jpeg", 0.78).split(",")[1];
+      }
 
-        const imgData = ctx.getImageData(0, 0, w, h);
-        const d = imgData.data;
-        const contrast = 1.65; // Yüksek kontrast çarpanı
+      async function analyzeImageWithGemini(base64Jpeg, apiKey) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const promptText = `Bu gıda paketini/etiketini incele ve SADECE aşağıdaki JSON formatında yanıt ver:
+{
+  "urunAdi": "Tespit edilen marka ve ürün adı (yoksa boş bırak)",
+  "okunanMetin": "Paketteki marka ve içindekiler listesindeki tüm kelimeler",
+  "ekRiskler": [
+    { "ad": "Zararlı katkı/şeker/yağ adı", "aciklama": "10 kelimelik kısa zararı" }
+  ],
+  "besin100g": {
+    "kalori": null,
+    "protein": null,
+    "yag": null,
+    "seker": null,
+    "tuz": null,
+    "lif": null
+  },
+  "tekCumleOzet": "Bu ürünün sağlık, katkı, protein, yağ ve tuz açısından 1 cümlelik net hükmü.",
+  "kategori": "sut | cikolata | et | tahil | yag | diger"
+}
+Not: besin100g içindeki değerler 100g veya 100ml başınadır; fotoğrafta görünmüyorsa null bırak, görünüyorsa sadece sayı (ör: 14.5) yaz.`;
 
-        for (let i = 0; i < d.length; i += 4) {
-          const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-          let val = (gray - 128) * contrast + 128;
-          if (val < 0) val = 0;
-          if (val > 255) val = 255;
-          d[i] = d[i + 1] = d[i + 2] = val;
+        const body = {
+          contents: [{
+            parts: [
+              { text: promptText },
+              { inline_data: { mime_type: "image/jpeg", data: base64Jpeg } }
+            ]
+          }],
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 550,
+            responseMimeType: "application/json"
+          }
+        };
+
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error((errData.error && errData.error.message) || `Hata kodu: ${res.status}`);
         }
 
-        ctx.putImageData(imgData, 0, 0);
-        return canvas;
+        const data = await res.json();
+        const rawJson = (
+          data.candidates &&
+          data.candidates[0] &&
+          data.candidates[0].content &&
+          data.candidates[0].content.parts &&
+          data.candidates[0].content.parts.map(p => p.text || "").join("")
+        ) || "{}";
+
+        return JSON.parse(rawJson);
+      }
+
+      function buildNutritionHTML(b) {
+        if (!b) return "";
+        const hasVal = v => typeof v === "number" && !isNaN(v);
+        if (![b.kalori, b.protein, b.yag, b.seker, b.tuz, b.lif].some(hasVal)) return "";
+
+        let pills = "";
+
+        // 1. Protein
+        if (hasVal(b.protein)) {
+          if (b.protein >= BESIN_SINIRLARI.protein.yuksek) {
+            pills += `<div class="nutri-pill good"><strong>🟢 Protein: ${b.protein}g</strong><br>Güçlü protein kaynağı</div>`;
+          } else if (b.protein >= BESIN_SINIRLARI.protein.orta) {
+            pills += `<div class="nutri-pill warn"><strong>🟡 Protein: ${b.protein}g</strong><br>Orta seviye protein</div>`;
+          } else {
+            pills += `<div class="nutri-pill bad"><strong>🔴 Protein: ${b.protein}g</strong><br>Protein açısından zayıf</div>`;
+          }
+        }
+
+        // 2. Yağ (Yarım Yağlı Tercihi)
+        if (hasVal(b.yag)) {
+          if (b.yag <= BESIN_SINIRLARI.yag.iyiMax) {
+            pills += `<div class="nutri-pill good"><strong>🟢 Yağ: ${b.yag}g</strong><br>İdeal (Yarım yağlı/Dengeli)</div>`;
+          } else if (b.yag <= BESIN_SINIRLARI.yag.ortaMax) {
+            pills += `<div class="nutri-pill warn"><strong>🟡 Yağ: ${b.yag}g</strong><br>Tam yağlı (Porsiyon dikkat)</div>`;
+          } else {
+            pills += `<div class="nutri-pill bad"><strong>🔴 Yağ: ${b.yag}g</strong><br>Yüksek yağ yükü (>20g)</div>`;
+          }
+        }
+
+        // 3. Tuz (Tuz Koruması)
+        if (hasVal(b.tuz)) {
+          if (b.tuz <= BESIN_SINIRLARI.tuz.iyi) {
+            pills += `<div class="nutri-pill good"><strong>🟢 Tuz: ${b.tuz}g</strong><br>Tuz korumalı (≤0.8g)</div>`;
+          } else if (b.tuz <= BESIN_SINIRLARI.tuz.orta) {
+            pills += `<div class="nutri-pill warn"><strong>🟡 Tuz: ${b.tuz}g</strong><br>Orta tuzlu</div>`;
+          } else {
+            pills += `<div class="nutri-pill bad"><strong>🔴 Tuz: ${b.tuz}g</strong><br>Yüksek tuz! (>1.5g)</div>`;
+          }
+        }
+
+        // 4. Şeker
+        if (hasVal(b.seker)) {
+          const kup = (b.seker / 4).toFixed(1);
+          if (b.seker <= BESIN_SINIRLARI.seker.iyi) {
+            pills += `<div class="nutri-pill good"><strong>🟢 Şeker: ${b.seker}g</strong><br>Düşük / Doğal sınırda</div>`;
+          } else if (b.seker <= BESIN_SINIRLARI.seker.orta) {
+            pills += `<div class="nutri-pill warn"><strong>🟡 Şeker: ${b.seker}g</strong><br>100g'da ~${kup} küp şeker</div>`;
+          } else {
+            pills += `<div class="nutri-pill bad"><strong>🔴 Şeker: ${b.seker}g</strong><br>Tam ${kup} küp şeker yükü!</div>`;
+          }
+        }
+
+        // 5. Kalori
+        if (hasVal(b.kalori)) {
+          if (b.kalori <= BESIN_SINIRLARI.kalori.iyi) {
+            pills += `<div class="nutri-pill good"><strong>🟢 Kalori: ${b.kalori} kcal</strong><br>Hafif / Düşük kalorili</div>`;
+          } else if (b.kalori <= BESIN_SINIRLARI.kalori.orta) {
+            pills += `<div class="nutri-pill warn"><strong>🟡 Kalori: ${b.kalori} kcal</strong><br>Orta enerji yoğunluğu</div>`;
+          } else {
+            pills += `<div class="nutri-pill bad"><strong>🔴 Kalori: ${b.kalori} kcal</strong><br>Yüksek kalorili ürün</div>`;
+          }
+        }
+
+        // 6. Lif
+        if (hasVal(b.lif)) {
+          if (b.lif >= BESIN_SINIRLARI.lif.yuksek) {
+            pills += `<div class="nutri-pill good"><strong>🟢 Lif: ${b.lif}g</strong><br>Yüksek prebiyotik lif</div>`;
+          } else if (b.lif >= BESIN_SINIRLARI.lif.orta) {
+            pills += `<div class="nutri-pill warn"><strong>🟡 Lif: ${b.lif}g</strong><br>Orta seviye lif</div>`;
+          } else {
+            pills += `<div class="nutri-pill bad"><strong>🔴 Lif: ${b.lif}g</strong><br>Düşük lif oranı</div>`;
+          }
+        }
+
+        return `
+          <div class="info-box box-pick" style="margin-bottom:10px;">
+            <span class="box-label" style="color:var(--info);">📊 100g Besin Değerleri Karnesi</span>
+            <div class="nutri-grid">${pills}</div>
+          </div>
+        `;
       }
 
       fileInput.addEventListener("change", async e => {
         const file = e.target.files[0];
         if (!file) return;
 
+        const apiKey = getSavedKey();
+        if (!apiKey) {
+          apiKeyBox.style.display = "block";
+          cameraModal.classList.add("open");
+          return;
+        }
+
         const imgUrl = URL.createObjectURL(file);
         camPreviewImg.src = imgUrl;
         camPreviewImg.style.display = "block";
         camResultsContainer.innerHTML = "";
-        camStatusText.textContent = "⏳ Etiket Netleştiriliyor ve Okunuyor...";
-        camSubStatus.textContent = "Kara liste kontrolü yapılıyor, lütfen bekleyin.";
+        camStatusText.textContent = "⚡ Etiket Analiz Ediliyor...";
+        camSubStatus.textContent = "Kara liste ve besin değerleri çıkarılıyor (1.5 sn)...";
         cameraModal.classList.add("open");
 
         try {
@@ -3229,52 +3414,38 @@
           imgEl.src = imgUrl;
           await new Promise(r => { imgEl.onload = r; });
 
-          const processedCanvas = preprocessCanvasForOCR(imgEl);
-          const Tesseract = await loadTesseractScript();
+          const base64Jpeg = compressImageToBase64(imgEl);
+          const aiData = await analyzeImageWithGemini(base64Jpeg, apiKey);
 
-          const result = await Tesseract.recognize(processedCanvas, "tur+eng", {
-            logger: m => {
-              if (m.status === "recognizing text") {
-                const pct = Math.round((m.progress || 0) * 100);
-                camStatusText.textContent = `🔍 Etiket Taranıyor... (%${pct})`;
-              }
-            }
-          });
+          const combinedText = `${aiData.urunAdi || ""} ${aiData.okunanMetin || ""}`;
+          const normText = normalizeTR(combinedText);
+          const compactText = normText.replace(/[^a-z0-9]/g, "");
 
-          const rawText = (result.data && result.data.text) ? result.data.text.trim() : "";
-          const cleanSingleLine = rawText.replace(/\s+/g, " ").trim();
-
-          if (!cleanSingleLine || cleanSingleLine.length < 3) {
-            camStatusText.textContent = "⚠️ Yazı Net Seçilemedi";
-            camSubStatus.textContent = "Lütfen kamerayı 'İçindekiler' yazısına yaklaştırıp parlama olmadan tekrar çekin.";
-            camResultsContainer.innerHTML = `
-              <div class="ocr-readonly-box">
-                <strong>📷 Kameranın Okuduğu Metin:</strong> (Net harf seçilemedi)
-              </div>
-            `;
-            return;
-          }
-
-          const normText = normalizeTR(cleanSingleLine);
-          const compactText = buildCompactEcodeText(normText);
-
-          // 1) Kara Liste Markası Kontrolü
+          // 1) Senin Kodundaki Kara Liste Markaları
           const caughtBrands = KARA_LISTE_MARKALARI.filter(brand =>
             isKeyMatched(normText, compactText, brand)
           );
 
-          // 2) Kara Liste Maddesi Kontrolü
+          // 2) Senin Kodundaki Kara Liste Maddeleri
           const caughtIngredients = KARA_LISTE_MADDELERI.filter(item =>
             item.keys.some(k => isKeyMatched(normText, compactText, k))
           );
 
-          camStatusText.textContent = "✅ Kontrol Tamamlandı";
-          camSubStatus.textContent = "Kara liste tarama sonucu aşağıdadır:";
+          // 3) Yapay Zekanın Tespit Ettiği Ekstra Riskler (Mükerrer olmayanlar)
+          const extraRisks = Array.isArray(aiData.ekRiskler) ? aiData.ekRiskler.filter(r => {
+            if (!r || !r.ad) return false;
+            const rNorm = normalizeTR(r.ad);
+            return !caughtIngredients.some(ci => normalizeTR(ci.name).includes(rNorm));
+          }) : [];
+
+          camStatusText.textContent = aiData.urunAdi ? `📦 ${aiData.urunAdi}` : "✅ Analiz Tamamlandı";
+          camSubStatus.textContent = aiData.tekCumleOzet || "Etiket tarama sonucu aşağıdadır:";
 
           let html = "";
 
-          if (caughtBrands.length > 0 || caughtIngredients.length > 0) {
-            html += `<div class="info-box box-wrong">`;
+          // A) KARA LİSTE SONUÇ KUTUSU
+          if (caughtBrands.length > 0 || caughtIngredients.length > 0 || extraRisks.length > 0) {
+            html += `<div class="info-box box-wrong" style="margin-bottom:10px;">`;
             html += `<span class="box-label" style="color:var(--danger);">🚫 KIRMIZI ALARM: KARA LİSTE YAKALANDI!</span>`;
 
             if (caughtBrands.length > 0) {
@@ -3293,32 +3464,48 @@
               `;
             });
 
+            extraRisks.forEach(risk => {
+              html += `
+                <div style="margin-top:6px; padding-top:4px;">
+                  <strong style="color:var(--danger);">⚠️ ${risk.ad}:</strong> ${risk.aciklama || ""}
+                </div>
+              `;
+            });
+
             html += `</div>`;
           } else {
             html += `
-              <div class="info-box box-right">
+              <div class="info-box box-right" style="margin-bottom:10px;">
                 <span class="box-label" style="color:var(--primary);">✅ KARA LİSTE BULUNMADI</span>
-                Okunan metinde kayıtlı bir <strong>Kara Liste Markası</strong> veya <strong>Kara Liste Maddesi</strong> tespit edilmedi.
+                Bu üründe kayıtlı bir <strong>Kara Liste Markası</strong> veya <strong>Zararlı Katkı Maddesi</strong> tespit edilmedi.
               </div>
             `;
           }
 
-          // En altta değiştirilemeyen (sabit) okunan metin bilgisi
-          const safeReadText = cleanSingleLine
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
+          // B) 100g BESİN DEĞERLERİ KARNESİ (PROTEİN, YAĞ, TUZ, ŞEKER, KALORİ, LİF)
+          html += buildNutritionHTML(aiData.besin100g);
 
-          html += `
-            <div class="ocr-readonly-box">
-              <strong>📷 Kameranın Seçebildiği Metin:</strong> ${safeReadText}
-            </div>
-          `;
+          // C) İLGİLİ BİYOREHBER ŞAMPİYON KARTLARI
+          const suggestedIds = KATEGORI_HARITASI[aiData.kategori] || [];
+          if (suggestedIds.length > 0) {
+            html += `
+              <div class="info-box box-surprise">
+                <span class="box-label" style="color:var(--accent);">🏆 Bu Gruptaki BiyoRehber Şampiyonlarımız</span>
+                <div class="tags-row" style="margin-top:6px;">
+                  ${suggestedIds.map(id => {
+                    const f = FOODS_DB.find(x => x.id === id);
+                    if (!f) return "";
+                    return `<button class="ranked-food-btn top-rank" onclick="openFoodFromCamera('${f.id}')">${f.name} →</button>`;
+                  }).join("")}
+                </div>
+              </div>
+            `;
+          }
 
           camResultsContainer.innerHTML = html;
         } catch (err) {
-          camStatusText.textContent = "❌ Okuma Hatası Oluştu";
-          camSubStatus.textContent = "İnternet bağlantınızı kontrol edip tekrar deneyin.";
+          camStatusText.textContent = "❌ Analiz Yapılamadı";
+          camSubStatus.textContent = "Üstteki 🔑 tuşundan anahtarınızı veya internetinizi kontrol edin (" + err.message + ").";
         }
 
         fileInput.value = "";
