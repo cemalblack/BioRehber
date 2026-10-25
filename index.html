@@ -2884,5 +2884,453 @@
     renderChips();
     renderMain();
   </script>
+  <!-- =====================================================================
+       AKILLI KAMERA MODÜLÜ (OTOMATİK GÖRÜNTÜ TANIMA + PAKET ETİKET OKUMA)
+       ===================================================================== -->
+  <style>
+    .search-bar input {
+      padding-right: 76px !important;
+    }
+    .clear-search {
+      right: 44px !important;
+    }
+    .camera-scan-btn {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .camera-scan-btn:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+    .cam-preview-wrap {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: var(--bg-card-alt);
+      padding: 10px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+    .cam-preview-img {
+      width: 78px;
+      height: 78px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .cam-status-text {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .cam-sub-status {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .scan-badge-danger {
+      display: inline-block;
+      background: rgba(239, 68, 68, 0.18);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+    .scan-badge-clean {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.18);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+  </style>
+
+  <!-- Kamera Sonuç Modalı -->
+  <div class="modal-overlay" id="cameraModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>📷 Akıllı Gıda & Etiket Tarayıcı</h3>
+        <div style="display:flex; gap:8px;">
+          <button class="icon-btn" id="retakeCamBtn" style="color:var(--primary);">📷 Yeni Çek</button>
+          <button class="icon-btn" id="closeCamModalBtn">Kapat ✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="cam-preview-wrap">
+          <img id="camPreviewImg" class="cam-preview-img" src="" alt="Önizleme" />
+          <div>
+            <div id="camStatusText" class="cam-status-text">Hazırlanıyor...</div>
+            <div id="camSubStatus" class="cam-sub-status">Görüntü ve yazılar otomatik kontrol ediliyor.</div>
+          </div>
+        </div>
+        <div id="camResultsContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // 1. Arama çubuğuna Kamera butonunu ve gizli dosya girişini ekle
+      const searchBar = document.querySelector(".search-bar");
+      const camBtn = document.createElement("button");
+      camBtn.className = "camera-scan-btn";
+      camBtn.title = "Fotoğraf Çek ve Analiz Et";
+      camBtn.innerHTML = "📷";
+
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/*";
+      fileInput.setAttribute("capture", "environment");
+      fileInput.style.display = "none";
+
+      searchBar.appendChild(camBtn);
+      searchBar.appendChild(fileInput);
+
+      const cameraModal = document.getElementById("cameraModal");
+      const camPreviewImg = document.getElementById("camPreviewImg");
+      const camStatusText = document.getElementById("camStatusText");
+      const camSubStatus = document.getElementById("camSubStatus");
+      const camResultsContainer = document.getElementById("camResultsContainer");
+
+      camBtn.addEventListener("click", () => fileInput.click());
+      document.getElementById("retakeCamBtn").addEventListener("click", () => fileInput.click());
+      document.getElementById("closeCamModalBtn").addEventListener("click", () => cameraModal.classList.remove("open"));
+      cameraModal.addEventListener("click", e => {
+        if (e.target === cameraModal) cameraModal.classList.remove("open");
+      });
+
+      // 2. Görsel Nesne Tanıma Sözlüğü (MobileNet İngilizce Sınıfları -> BiyoRehber Gıda ID'leri)
+      const VISUAL_FOOD_MAP = [
+        { keys: ["broccoli"], ids: ["brokoli_karnabahar"], label: "Brokoli" },
+        { keys: ["cauliflower"], ids: ["brokoli_karnabahar"], label: "Karnabahar" },
+        { keys: ["head cabbage", "cabbage"], ids: ["mor_lahana", "beyaz_lahana"], label: "Lahana (Mor / Beyaz)" },
+        { keys: ["bell pepper", "capsicum", "chili"], ids: ["kapya_biber"], label: "Kapya / Çarliston Biber" },
+        { keys: ["artichoke", "cardoon"], ids: ["enginar"], label: "Enginar" },
+        { keys: ["mushroom", "agaric", "bolete", "gyromitra", "hen-of-the-woods", "stinkhorn"], ids: ["mantar"], label: "Mantar" },
+        { keys: ["cucumber", "pickled"], ids: ["domates_salatalik"], label: "Salatalık / Domates" },
+        { keys: ["zucchini", "courgette", "eggplant", "aubergine", "acorn squash", "butternut squash", "spaghetti squash"], ids: ["patlican_kabak_bamya"], label: "Kabak / Patlıcan" },
+        { keys: ["lemon"], ids: ["limon"], label: "Limon" },
+        { keys: ["orange", "tangerine", "clementine"], ids: ["mandalina_albedo"], label: "Mandalina / Narenciye" },
+        { keys: ["granny smith", "apple"], ids: ["elma_kabuklu"], label: "Elma" },
+        { keys: ["pomegranate"], ids: ["nar"], label: "Nar" },
+        { keys: ["strawberry"], ids: ["cilek"], label: "Çilek" },
+        { keys: ["banana"], ids: ["muz"], label: "Muz" },
+        { keys: ["fig"], ids: ["yas_incir"], label: "İncir" },
+        { keys: ["espresso", "coffee mug", "cup"], ids: ["kahve", "cay_yesil_siyah"], label: "Kahve / Çay" }
+      ];
+
+      // 3. Paket Üzeri Kelime -> Gıda Kartı Eşleştirme Sözlüğü
+      const TEXT_FOOD_KEYWORDS = [
+        { words: ["nutella", "cokokrem", "çokokrem", "kakaolu findik", "kakaolu fındık"], id: "yasak_nutella_cokokrem" },
+        { words: ["salam", "sosis", "sucuk", "jambon", "eritme peynir", "tost peynir", "üçgen peynir"], id: "yasak_sarkuteri_eritme" },
+        { words: ["meyveli yoğurt", "meyveli kefir", "hazır çorba", "bulyon", "cips", "mısır gevreği"], id: "yasak_meyveli_yogurt_cips" },
+        { words: ["tatlı lor", "lor peynir", "süzme yoğurt", "peynir altı suyu"], id: "tatli_lor_suzme" },
+        { words: ["kefir"], id: "kefir" },
+        { words: ["ezine", "eski kaşar", "tulum peynir"], id: "yogurt_kefir_peynir" },
+        { words: ["sardalya", "uskumru", "hamsi"], id: "konserve_sardalya" },
+        { words: ["zeytinyağ", "sızma", "zeytin"], id: "zeytin_zeytinyagi" },
+        { words: ["fındık ezmesi", "fıstık ezmesi"], id: "sekersiz_findik_ezmesi" },
+        { words: ["tahin"], id: "tahin" },
+        { words: ["yulaf"], id: "yulaf_ezmesi" },
+        { words: ["bulgur", "siyez"], id: "bulgur" },
+        { words: ["makarna", "durum buğday"], id: "durum_makarna" },
+        { words: ["karabuğday", "greçka"], id: "karabugday" },
+        { words: ["mercimek", "nohut"], id: "mercimek_nohut" },
+        { words: ["fasulye", "barbunya"], id: "kuru_fasulye_barbunya" },
+        { words: ["zerdeçal", "kurkumin"], id: "zerdecal" },
+        { words: ["sumak"], id: "sumak" },
+        { words: ["çörek otu", "keten tohumu"], id: "corekotu_keten" },
+        { words: ["kakao"], id: "dogal_kakao" },
+        { words: ["leblebi", "çavdar gevreği", "wasa"], id: "leblebi_cavdar_gevregi" }
+      ];
+
+      // 4. İçindekiler Etiketi: Kırmızı Çizgi (Zararlı) ve Yeşil Bayrak (Temiz) Radar Sözlüğü
+      const DANGER_INGREDIENTS = [
+        { keys: ["palm", "hurma yağı", "bitkisel yağ (palm"], name: "Rafine Palm Yağı", desc: "200°C üzerinde işlenirken DNA ve böbrek toksini olan '3-MCPD ve Glisidil Esterleri' üretir." },
+        { keys: ["e250", "sodyum nitrit", "nitrit", "e251", "sodyum nitrat"], name: "Sodyum Nitrit / Nitrat (E250)", desc: "İşlenmiş et koruyucusudur; midede ve ısıda kolon kanseri tetikleyicisi 'N-Nitrozaminlere' dönüşür." },
+        { keys: ["eritme tuzu", "eritme tuzları", "polifosfat", "e452", "e450", "e339", "fosfat"], name: "Eritme / Fosfat Tuzları", desc: "Gerçek peynir değildir; inorganik fosfatlar damarları kireçlendirir ve kemiklerden kalsiyum çalar." },
+        { keys: ["glukoz şurubu", "fruktoz şurubu", "mısır şurubu", "invert şeker", "glikoz şurubu"], name: "Glukoz / Fruktoz Şurubu", desc: "Doğrudan karaciğer yağlanması, ürik asit artışı ve şiddetli insülin direnci yapar." },
+        { keys: ["maltodekstrin", "modifiye nişasta"], name: "Maltodekstrin / Modifiye Nişasta", desc: "Glisemik indeksi beyaz şekerden bile yüksektir (GI: 110); kan şekerini patlatır ve bağırsak mukozasını bozar." },
+        { keys: ["monosodyum glutamat", "e621", "çin tuzu", "maya ekstraktı"], name: "MSG (E621 / Çin Tuzu)", desc: "Beynin tokluk merkezini yanıltarak bağımlılık ve aşırı yeme tetikler." },
+        { keys: ["demir glukonat", "e579", "demir laktat", "e585"], name: "Demir Glukonat (E579 - Zeytin Boyası)", desc: "Yeşil zeytini kostikle karartıp simsiyah göstermek için kullanılan kimyasal boyadır." },
+        { keys: ["alkalize", "asitliği düzenleyici", "potasyum karbonat"], name: "Alkalize İşlem (Kakao Kaybı)", desc: "Kakaonun rengini koyulaştırırken içindeki damar açıcı flavanollerin %75'ini yok eder." },
+        { keys: ["karragenan", "e407"], name: "Karragenan (E407)", desc: "Süt ürünlerinde kıvam artırıcı olarak kullanılır; bağırsak duvarında iltihap tetikleyebilir." },
+        { keys: ["aspartam", "asesülfam", "sukraloz", "maltitol", "sorbitol"], name: "Yapay Tatlandırıcı / Şeker Alkolü", desc: "Bağırsak mikrobiyotasını bozar, şişkinlik ve gaz yapar." },
+        { keys: ["şeker", "toz şeker", "pancar şekeri"], name: "İlave Beyaz Şeker", desc: "İnsülini zıplatır, damar ve kolajen liflerini sertleştirir (glikasyon)." }
+      ];
+
+      const CLEAN_INGREDIENTS = [
+        { keys: ["şirden", "şirden mayası"], name: "Gerçek Şirden Mayası", desc: "Doğal peynir fermantasyonu ve yüksek K2 vitamini işaretidir." },
+        { keys: ["soğuk sıkım", "erken hasat", "sızma zeytinyağı"], name: "Soğuk Sıkım Sızma Zeytinyağı", desc: "Oleuropein ve Oleokantal polifenolleri ısıda bozulmadan korunmuştur." },
+        { keys: ["durum buğdayı"], name: "%100 Durum Buğdayı İrmiği", desc: "Nişastası protein ağında kilitlidir, kan şekerini yavaş yükseltir." },
+        { keys: ["ekşi maya", "siyez", "tam çavdar"], name: "Gerçek Ekşi Maya / Tam Tahıl", desc: "Fitik asidi parçalanmış ve glisemik indeksi düşürülmüş tahıl." },
+        { keys: ["%100 fındık", "%100 yer fıstığı", "%100 susam"], name: "%100 Katkısız Ezme", desc: "İlave şeker ve palm yağı içermeyen saf kuruyemiş/tohum." }
+      ];
+
+      // Kütüphaneleri sadece kamera kullanıldığında (Lazy-Load) yükle
+      let mobilenetModel = null;
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          if (document.querySelector(`script[src="${src}"]`)) return resolve();
+          const s = document.createElement("script");
+          s.src = src;
+          s.onload = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+
+      async function ensureMobileNet() {
+        if (mobilenetModel) return mobilenetModel;
+        camStatusText.textContent = "🔄 1/2: Görüntü Tanıma Motoru Hazırlanıyor...";
+        await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js");
+        await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js");
+        mobilenetModel = await window.mobilenet.load({ version: 2, alpha: 1.0 });
+        return mobilenetModel;
+      }
+
+      async function ensureTesseract() {
+        if (window.Tesseract) return window.Tesseract;
+        camStatusText.textContent = "🔄 2/2: Etiket & Harf Okuma Motoru Hazırlanıyor...";
+        await loadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js");
+        return window.Tesseract;
+      }
+
+      // Gıda kartına gitme yardımcı fonksiyonu
+      window.openFoodFromCamera = function(foodId) {
+        cameraModal.classList.remove("open");
+        window.jumpToFoodCard(foodId);
+      };
+
+      // Fotoğraf seçildiğinde / çekildiğinde başlayan 2 aşamalı otomatik süreç
+      fileInput.addEventListener("change", async e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const imgUrl = URL.createObjectURL(file);
+        camPreviewImg.src = imgUrl;
+        camResultsContainer.innerHTML = "";
+        camStatusText.textContent = "🔍 Fotoğraf İnceleniyor...";
+        camSubStatus.textContent = "Önce meyve/sebze görüntüsü, ardından paket yazıları kontrol ediliyor.";
+        cameraModal.classList.add("open");
+
+        const imgEl = new Image();
+        imgEl.src = imgUrl;
+        await new Promise(r => { imgEl.onload = r; });
+
+        let visualMatched = false;
+
+        // AŞAMA 1: GÖRÜNTÜDEN MEYVE / SEBZE TANIMA
+        try {
+          const model = await ensureMobileNet();
+          camStatusText.textContent = "🔄 1/2: Görüntü Taranıyor...";
+          const predictions = await model.classify(imgEl, 5);
+
+          let matchedGroup = null;
+          let bestProb = 0;
+
+          for (const pred of predictions) {
+            const className = pred.className.toLowerCase();
+            for (const item of VISUAL_FOOD_MAP) {
+              if (item.keys.some(k => className.includes(k)) && pred.probability >= 0.18) {
+                matchedGroup = item;
+                bestProb = Math.round(pred.probability * 100);
+                break;
+              }
+            }
+            if (matchedGroup) break;
+          }
+
+          if (matchedGroup) {
+            visualMatched = true;
+            camStatusText.textContent = `✅ Görüntü Tanındı: ${matchedGroup.label} (%${bestProb})`;
+            camSubStatus.textContent = "Aşağıdaki karta dokunarak tüm analizini açabilirsin.";
+
+            const cardsHTML = matchedGroup.ids.map(id => {
+              const f = FOODS_DB.find(x => x.id === id);
+              if (!f) return "";
+              return `
+                <div class="info-box box-right" style="margin-bottom:10px;">
+                  <span class="box-label" style="color:var(--primary);">🎯 Eşleşen BiyoRehber Kartı</span>
+                  <div style="font-weight:800; font-size:1rem; margin:4px 0;">${f.name}</div>
+                  <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:8px;">${f.surprise.slice(0, 140)}...</div>
+                  <button class="ranked-food-btn top-rank" style="width:100%; justify-content:center;" onclick="openFoodFromCamera('${f.id}')">
+                    📖 Bu Gıdanın Kartını ve Kurallarını Aç →
+                  </button>
+                </div>
+              `;
+            }).join("");
+
+            camResultsContainer.innerHTML = `
+              ${cardsHTML}
+              <button class="action-toggle-btn" style="width:100%; margin-top:8px;" id="forceOcrBtn">
+                📄 Bu Bir Paketli Ürün / Etiket mi? (Yazıları Oku)
+              </button>
+            `;
+
+            document.getElementById("forceOcrBtn").addEventListener("click", () => runOcrStage(imgEl));
+          }
+        } catch (err) {
+          console.warn("Görsel tanıma atlandı, yazı okumaya geçiliyor:", err);
+        }
+
+        // Eğer görselde meyve/sebze bulunamadıysa OTOMATİK OLARAK AŞAMA 2'YE (YAZI OKUMA) GEÇ
+        if (!visualMatched) {
+          await runOcrStage(imgEl);
+        }
+
+        fileInput.value = "";
+      });
+
+      // AŞAMA 2: PAKET İSMİ VE İÇİNDEKİLER ETİKETİ OKUMA (OCR)
+      async function runOcrStage(imgEl) {
+        try {
+          const Tesseract = await ensureTesseract();
+          camStatusText.textContent = "🔄 Paketteki Yazılar ve İçindekiler Okunuyor...";
+          camSubStatus.textContent = "Bu işlem yazının yoğunluğuna göre 3-6 saniye sürebilir.";
+          camResultsContainer.innerHTML = "";
+
+          // Küçük yazıları daha net okumak için kontrastlı tuval (Canvas) hazırlığı
+          const canvas = document.createElement("canvas");
+          const maxDim = 1400;
+          let w = imgEl.naturalWidth || imgEl.width;
+          let h = imgEl.naturalHeight || imgEl.height;
+          if (w > maxDim || h > maxDim) {
+            const scale = maxDim / Math.max(w, h);
+            w = Math.round(w * scale);
+            h = Math.round(h * scale);
+          }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          ctx.filter = "grayscale(100%) contrast(145%)";
+          ctx.drawImage(imgEl, 0, 0, w, h);
+
+          const result = await Tesseract.recognize(canvas, "tur+eng");
+          const rawText = (result.data && result.data.text) ? result.data.text.trim() : "";
+          const lowerText = rawText.toLocaleLowerCase("tr-TR");
+
+          if (!rawText || rawText.length < 3) {
+            camStatusText.textContent = "⚠️ Net Bir Gıda veya Yazı Okunamadı";
+            camSubStatus.textContent = "Lütfen kamerayı ürüne veya 'İçindekiler' yazısına biraz daha yaklaştırıp net odaklayarak tekrar çek.";
+            return;
+          }
+
+          // 1) Pakette doğrudan kayıtlı bir gıda adı geçiyor mu?
+          const matchedFoodIds = [];
+          for (const item of TEXT_FOOD_KEYWORDS) {
+            if (item.words.some(w => lowerText.includes(w))) {
+              if (!matchedFoodIds.includes(item.id)) matchedFoodIds.push(item.id);
+            }
+          }
+
+          // 2) İçindekiler listesinde Yasaklı / Riskli madde var mı?
+          const caughtDangers = DANGER_INGREDIENTS.filter(d =>
+            d.keys.some(k => lowerText.includes(k))
+          );
+
+          // 3) İçindekiler listesinde Temiz / Kaliteli ibare var mı?
+          const caughtCleans = CLEAN_INGREDIENTS.filter(c =>
+            c.keys.some(k => lowerText.includes(k))
+          );
+
+          camStatusText.textContent = "✅ Etiket ve Paket Analizi Tamamlandı";
+          camSubStatus.textContent = "Okunan bilgilere göre BiyoRehber raporu aşağıdadır:";
+
+          let html = "";
+
+          // Zararlı maddeler yakalandıysa Kırmızı Alarm göster
+          if (caughtDangers.length > 0) {
+            html += `
+              <div class="info-box box-wrong" style="margin-bottom:12px;">
+                <span class="scan-badge-danger">🚫 KIRMIZI ALARM: ${caughtDangers.length} Riskli Madde Yakalandı!</span>
+                ${caughtDangers.map(d => `
+                  <div style="margin-top:6px; padding-top:6px; border-top:1px dashed rgba(239,68,68,0.3);">
+                    <strong style="color:var(--danger);">❌ ${d.name}:</strong> ${d.desc}
+                  </div>
+                `).join("")}
+              </div>
+            `;
+          }
+
+          // Temiz ibareler yakalandıysa Yeşil Kutu göster
+          if (caughtCleans.length > 0) {
+            html += `
+              <div class="info-box box-right" style="margin-bottom:12px;">
+                <span class="scan-badge-clean">🏆 OLUMLU KRİTER: ${caughtCleans.length} Temiz İbare Bulundu</span>
+                ${caughtCleans.map(c => `
+                  <div style="margin-top:6px;">
+                    <strong style="color:var(--primary);">✅ ${c.name}:</strong> ${c.desc}
+                  </div>
+                `).join("")}
+              </div>
+            `;
+          }
+
+          // Eşleşen BiyoRehber kartları varsa butonlarını göster
+          if (matchedFoodIds.length > 0) {
+            html += `
+              <div class="info-box box-pick" style="margin-bottom:12px;">
+                <span class="box-label" style="color:var(--info);">📚 İlgili BiyoRehber Kartları (Tıkla & Aç)</span>
+                <div class="tags-row" style="margin-top:6px;">
+                  ${matchedFoodIds.map(id => {
+                    const f = FOODS_DB.find(x => x.id === id);
+                    if (!f) return "";
+                    return `<button class="ranked-food-btn top-rank" onclick="openFoodFromCamera('${f.id}')">${f.name} →</button>`;
+                  }).join("")}
+                </div>
+              </div>
+            `;
+          }
+
+          // Hiçbir özel anahtar kelime yakalanmadıysa genel bilgi ver
+          if (caughtDangers.length === 0 && caughtCleans.length === 0 && matchedFoodIds.length === 0) {
+            html += `
+              <div class="info-box box-surprise" style="margin-bottom:12px;">
+                <span class="box-label" style="color:var(--accent);">ℹ️ Kara Liste Maddesi Görülmedi</span>
+                Okunan metinde bilinen bir zararlı katkı (Palm yağı, E250 nitrit, eritme tuzu, glukoz şurubu, MSG) tespit edilmedi. Yine de aşağıdaki okunan metni kontrol edebilirsin.
+              </div>
+            `;
+          }
+
+          // Kameranın okuduğu ham metni en altta göster
+          html += `
+            <div class="info-box box-storage" style="font-size:0.78rem; color:var(--text-muted);">
+              <span class="box-label" style="color:var(--purple);">📄 Kameranın Okuduğu Metin</span>
+              <div style="max-height:110px; overflow-y:auto; white-space:pre-wrap;">${rawText.replace(/</g, "&lt;")}</div>
+            </div>
+          `;
+
+          camResultsContainer.innerHTML = html;
+        } catch (err) {
+          camStatusText.textContent = "❌ Yazı Okuma Hatası";
+          camSubStatus.textContent = "İnternet bağlantınızı kontrol edip daha net bir fotoğrafla tekrar deneyin.";
+        }
+      }
+    })();
+  </script>
 </body>
 </html>
