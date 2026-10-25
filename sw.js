@@ -1,4 +1,4 @@
-const CACHE_NAME = "biyorehber-v8";
+const CACHE_NAME = "biyorehber-v9";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
