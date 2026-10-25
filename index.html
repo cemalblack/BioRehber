@@ -2885,7 +2885,7 @@
     renderMain();
   </script>
   <!-- =====================================================================
-       KARA LİSTE MADDESİ VE MARKASI ETİKET TARAYICI MODÜLÜ
+       KARA LİSTE MADDESİ VE MARKASI ETİKET TARAYICI MODÜLÜ (GÜÇLENDİRİLMİŞ OCR)
        (Ana koda dokunmadan sadece </body> üstüne eklenen bağımsız modül)
        ===================================================================== -->
   <style>
@@ -2899,27 +2899,27 @@
       padding-right: 34px !important;
     }
     .clear-search {
-      right: 112px !important;
+      right: 110px !important;
     }
     .label-scan-btn {
       flex-shrink: 0;
-      width: 96px;
+      width: 94px;
       height: 40px;
-      background: var(--bg-card-alt);
+      background: var(--bg-card);
       color: var(--text);
-      border: 1px solid var(--danger);
+      border: 1px solid var(--border);
       border-radius: 10px;
-      font-size: 0.82rem;
-      font-weight: 800;
+      font-size: 0.84rem;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 5px;
-      box-shadow: var(--shadow);
     }
     .label-scan-btn:active {
-      transform: scale(0.96);
+      border-color: var(--primary);
+      transform: scale(0.97);
     }
     .cam-preview-wrap {
       display: flex;
@@ -2951,6 +2951,20 @@
       color: var(--text-muted);
       margin-top: 3px;
     }
+    .ocr-readonly-box {
+      margin-top: 12px;
+      padding: 9px 11px;
+      border-radius: 9px;
+      background: var(--bg-card-alt);
+      border: 1px solid var(--border);
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      max-height: 90px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: none;
+    }
   </style>
 
   <!-- Kara Liste Sonuç Modalı -->
@@ -2968,7 +2982,7 @@
           <img id="camPreviewImg" class="cam-preview-img" src="" alt="Etiket" />
           <div style="flex:1;">
             <div id="camStatusText" class="cam-status-text">Etiket Taranıyor...</div>
-            <div id="camSubStatus" class="cam-sub-status">Paketin üzerindeki marka veya 'İçindekiler' kısmı kontrol ediliyor.</div>
+            <div id="camSubStatus" class="cam-sub-status">Paketin üzerindeki yazılar okunuyor.</div>
           </div>
         </div>
         <div id="camResultsContainer"></div>
@@ -2982,13 +2996,13 @@
        * 🛠️ 1. KARA LİSTE MARKALARI VE MADDELERİ (KOLAY EKLEME BÖLÜMÜ)
        * İleride yeni bir marka veya katkı maddesi eklemek istediğinde
        * aşağıdaki listelere virgülle yeni bir satır eklemen yeterlidir.
+       * (Türkçe/İngilizce harf veya büyük/küçük harf farklarını kod kendi eşitler)
        ***********************************************************************/
 
-      // A) KARA LİSTE MARKALARI (Küçük harfle yaz)
+      // A) KARA LİSTE MARKALARI
       const KARA_LISTE_MARKALARI = [
         "nutella",
         "çokokrem",
-        "cokokrem",
         "sarelle",
         "fiskobirlik nuga",
         "danette",
@@ -2997,26 +3011,129 @@
         "pringles",
         "doritos",
         "ruffles",
-        "cheetos"
+        "cheetos",
+        "lays",
+        "coca cola",
+        "pepsi",
+        "fanta",
+        "nesquik",
+        "calve",
+        "becel",
+        "sana"
       ];
 
-      // B) KARA LİSTE MADDELERİ (Aranacak kelimeler ve kısa açıklaması)
+      // B) KARA LİSTE MADDELERİ (Kök kelimeler ve açıklaması)
       const KARA_LISTE_MADDELERI = [
-        { keys: ["palm", "hurma yağı"], name: "Rafine Palm Yağı", desc: "Yüksek ısıda işlenirken DNA ve böbrek toksini olan '3-MCPD ve Glisidil Esterleri' üretir." },
-        { keys: ["e250", "sodyum nitrit", "nitrit", "e251", "sodyum nitrat"], name: "Sodyum Nitrit / Nitrat (E250)", desc: "İşlenmiş et koruyucusudur; midede kolon kanseri tetikleyicisi 'N-Nitrozaminlere' dönüşür." },
-        { keys: ["eritme tuzu", "eritme tuzları", "polifosfat", "e452", "e450", "e339", "fosfat"], name: "Eritme / Fosfat Tuzları", desc: "Gerçek peynir değildir; inorganik fosfatlar damarları kireçlendirir ve kemiklerden kalsiyum çalar." },
-        { keys: ["glukoz şurubu", "fruktoz şurubu", "mısır şurubu", "invert şeker", "glikoz şurubu"], name: "Glukoz / Fruktoz Şurubu", desc: "Doğrudan karaciğer yağlanması, ürik asit artışı ve şiddetli insülin direnci yapar." },
-        { keys: ["maltodekstrin", "modifiye nişasta"], name: "Maltodekstrin / Modifiye Nişasta", desc: "Glisemik indeksi beyaz şekerden bile yüksektir (GI: 110); kan şekerini hızla patlatır." },
-        { keys: ["monosodyum glutamat", "e621", "çin tuzu", "maya ekstraktı"], name: "MSG (E621 / Çin Tuzu)", desc: "Beynin tokluk merkezini yanıltarak aşırı yeme tetikler." },
-        { keys: ["demir glukonat", "e579", "demir laktat", "e585"], name: "Demir Glukonat (E579 - Zeytin Boyası)", desc: "Yeşil zeytini kostikle karartıp simsiyah göstermek için kullanılan kimyasal boyadır." },
-        { keys: ["alkalize", "potasyum karbonat"], name: "Alkalize İşlem (Kakao Kaybı)", desc: "Kakaonun rengini koyulaştırırken içindeki damar açıcı flavanollerin %75'ini yok eder." },
-        { keys: ["karragenan", "e407"], name: "Karragenan (E407)", desc: "Kıvam artırıcıdır; bağırsak duvarında iltihap ve şişkinlik tetikleyebilir." },
-        { keys: ["aspartam", "asesülfam", "sukraloz", "maltitol", "sorbitol"], name: "Yapay Tatlandırıcı / Şeker Alkolü", desc: "Bağırsak mikrobiyotasını bozar ve gaz yapar." },
-        { keys: ["margarin", "hidrojene", "trans yağ"], name: "Hidrojene / Trans Yağ", desc: "Damar iç yüzeyini (endotel) doğrudan yaralayan sentetik katı yağ." }
+        {
+          keys: ["palm", "hurma yagi"],
+          name: "Rafine Palm Yağı",
+          desc: "Yüksek ısıda işlenirken DNA ve böbrek toksini olan '3-MCPD ve Glisidil Esterleri' üretir."
+        },
+        {
+          keys: ["e250", "e251", "e252", "nitrit", "sodyum nitrat", "potasyum nitrit"],
+          name: "Sodyum Nitrit / Nitrat (E250)",
+          desc: "İşlenmiş et koruyucusudur; midede kolon kanseri tetikleyicisi 'N-Nitrozaminlere' dönüşür."
+        },
+        {
+          keys: ["eritme tuzu", "eritme tuzlari", "polifosfat", "difosfat", "trifosfat", "fosfat", "e452", "e450", "e339", "e340", "e341"],
+          name: "Eritme / Fosfat Tuzları",
+          desc: "Gerçek peynir değildir; inorganik fosfatlar damarları kireçlendirir ve kemiklerden kalsiyum çalar."
+        },
+        {
+          keys: ["glukoz surubu", "fruktoz surubu", "misir surubu", "invert seker", "glikoz surubu", "yuksek fruktoz"],
+          name: "Glukoz / Fruktoz / Mısır Şurubu",
+          desc: "Doğrudan karaciğer yağlanması, ürik asit artışı ve şiddetli insülin direnci yapar."
+        },
+        {
+          keys: ["maltodeks", "modifiye nisasta"],
+          name: "Maltodekstrin / Modifiye Nişasta",
+          desc: "Glisemik indeksi beyaz şekerden bile yüksektir (GI: 110); kan şekerini hızla patlatır."
+        },
+        {
+          keys: ["glutamat", "e621", "e627", "e631", "e635", "cin tuzu", "maya ekstrakti", "aroma artirici"],
+          name: "MSG (E621 / Çin Tuzu / Aroma Artırıcı)",
+          desc: "Beynin tokluk merkezini yanıltarak aşırı yeme tetikler."
+        },
+        {
+          keys: ["demir glukonat", "e579", "demir laktat", "e585"],
+          name: "Demir Glukonat (E579 - Zeytin Boyası)",
+          desc: "Yeşil zeytini kostikle karartıp simsiyah göstermek için kullanılan kimyasal boyadır."
+        },
+        {
+          keys: ["alkalize", "potasyum karbonat", "e501"],
+          name: "Alkalize İşlem (Kakao Kaybı)",
+          desc: "Kakaonun rengini koyulaştırırken içindeki damar açıcı flavanollerin %75'ini yok eder."
+        },
+        {
+          keys: ["karragenan", "karagenan", "e407"],
+          name: "Karragenan (E407)",
+          desc: "Kıvam artırıcıdır; bağırsak duvarında iltihap ve şişkinlik tetikleyebilir."
+        },
+        {
+          keys: ["aspartam", "asesulfam", "sukraloz", "sakarin", "maltitol", "sorbitol", "ksilitol", "e950", "e951", "e955"],
+          name: "Yapay Tatlandırıcı / Şeker Alkolü",
+          desc: "Bağırsak mikrobiyotasını bozar ve gaz/şişkinlik yapar."
+        },
+        {
+          keys: ["margarin", "hidrojene", "trans yag"],
+          name: "Hidrojene / Trans Yağ / Margarin",
+          desc: "Damar iç yüzeyini (endotel) doğrudan yaralayan sentetik katı yağ."
+        },
+        {
+          keys: ["sodyum benzoat", "potasyum sorbat", "kalsiyum sorbat", "e211", "e202", "kukurt dioksit", "e220"],
+          name: "Sentetik Koruyucu (E211 / E202 / E220)",
+          desc: "Bağırsak dostu bakterilere zarar veren ve alerjik reaksiyon tetikleyebilen kimyasal koruyucu."
+        },
+        {
+          keys: ["soya lesitin", "polisorbat", "mono ve digliserit", "e471", "e433"],
+          name: "Endüstriyel Emülgatör (E471 / Lesitin)",
+          desc: "Bağırsak mukozasının koruyucu mukus tabakasını inceltebilen katkı maddesi."
+        }
       ];
 
       /***********************************************************************
-       * ⚙️ 2. BUTON YERLEŞİMİ VE KAMERA OKUMA SİSTEMİ
+       * 🔤 2. AKILLI HARF, BOŞLUK VE E-KODU EŞİTLEYİCİ (NORMALİZASYON)
+       ***********************************************************************/
+      function normalizeTR(str) {
+        return (str || "")
+          .toLowerCase()
+          .replace(/i̇/g, "i")
+          .replace(/[ıİI]/g, "i")
+          .replace(/[ğĞ]/g, "g")
+          .replace(/[üÜ]/g, "u")
+          .replace(/[şŞ]/g, "s")
+          .replace(/[öÖ]/g, "o")
+          .replace(/[çÇ]/g, "c");
+      }
+
+      // E-kodlarındaki boşlukları ve kameranın 0->O, 5->S, 2->Z, 1->I hatalarını düzeltir
+      function buildCompactEcodeText(normStr) {
+        const noSpace = normStr.replace(/[^a-z0-9]/g, "");
+        return noSpace.replace(/e([0-9oizsb]{3})/g, (_, code) => {
+          const fixed = code
+            .replace(/o/g, "0")
+            .replace(/[il]/g, "1")
+            .replace(/z/g, "2")
+            .replace(/s/g, "5")
+            .replace(/b/g, "8");
+          return "e" + fixed;
+        });
+      }
+
+      function isKeyMatched(normText, compactText, rawKey) {
+        const normKey = normalizeTR(rawKey).trim();
+        if (!normKey) return false;
+        if (normText.includes(normKey)) return true;
+
+        const compactKey = normKey.replace(/[^a-z0-9]/g, "");
+        if (compactKey.length >= 4 && compactText.includes(compactKey)) {
+          return true;
+        }
+        return false;
+      }
+
+      /***********************************************************************
+       * ⚙️ 3. BUTON YERLEŞİMİ VE YÜKSEK KONTRASTLI OCR SİSTEMİ
        ***********************************************************************/
       const searchBar = document.querySelector(".search-bar");
       const scanBtn = document.createElement("button");
@@ -3057,6 +3174,44 @@
         });
       }
 
+      // Parlak paketleri ve renkli zeminleri netleştiren piksel filtresi
+      function preprocessCanvasForOCR(imgEl) {
+        const canvas = document.createElement("canvas");
+        const maxDim = 2200;
+        let w = imgEl.naturalWidth || imgEl.width;
+        let h = imgEl.naturalHeight || imgEl.height;
+
+        if (w > maxDim || h > maxDim) {
+          const scale = maxDim / Math.max(w, h);
+          w = Math.round(w * scale);
+          h = Math.round(h * scale);
+        } else if (Math.max(w, h) < 1200) {
+          const scale = 1500 / Math.max(w, h);
+          w = Math.round(w * scale);
+          h = Math.round(h * scale);
+        }
+
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(imgEl, 0, 0, w, h);
+
+        const imgData = ctx.getImageData(0, 0, w, h);
+        const d = imgData.data;
+        const contrast = 1.65; // Yüksek kontrast çarpanı
+
+        for (let i = 0; i < d.length; i += 4) {
+          const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+          let val = (gray - 128) * contrast + 128;
+          if (val < 0) val = 0;
+          if (val > 255) val = 255;
+          d[i] = d[i + 1] = d[i + 2] = val;
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+        return canvas;
+      }
+
       fileInput.addEventListener("change", async e => {
         const file = e.target.files[0];
         if (!file) return;
@@ -3065,7 +3220,7 @@
         camPreviewImg.src = imgUrl;
         camPreviewImg.style.display = "block";
         camResultsContainer.innerHTML = "";
-        camStatusText.textContent = "⏳ Etiket Okunuyor...";
+        camStatusText.textContent = "⏳ Etiket Netleştiriliyor ve Okunuyor...";
         camSubStatus.textContent = "Kara liste kontrolü yapılıyor, lütfen bekleyin.";
         cameraModal.classList.add("open");
 
@@ -3074,23 +3229,10 @@
           imgEl.src = imgUrl;
           await new Promise(r => { imgEl.onload = r; });
 
-          const canvas = document.createElement("canvas");
-          const maxDim = 1200;
-          let w = imgEl.naturalWidth || imgEl.width;
-          let h = imgEl.naturalHeight || imgEl.height;
-          if (w > maxDim || h > maxDim) {
-            const scale = maxDim / Math.max(w, h);
-            w = Math.round(w * scale);
-            h = Math.round(h * scale);
-          }
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(imgEl, 0, 0, w, h);
-
+          const processedCanvas = preprocessCanvasForOCR(imgEl);
           const Tesseract = await loadTesseractScript();
 
-          const result = await Tesseract.recognize(canvas, "tur+eng", {
+          const result = await Tesseract.recognize(processedCanvas, "tur+eng", {
             logger: m => {
               if (m.status === "recognizing text") {
                 const pct = Math.round((m.progress || 0) * 100);
@@ -3100,20 +3242,30 @@
           });
 
           const rawText = (result.data && result.data.text) ? result.data.text.trim() : "";
-          if (!rawText || rawText.length < 3) {
-            camStatusText.textContent = "⚠️ Yazı Net Okunamadı";
-            camSubStatus.textContent = "Lütfen kamerayı etikete biraz daha yaklaştırıp net odaklayarak tekrar çekin.";
+          const cleanSingleLine = rawText.replace(/\s+/g, " ").trim();
+
+          if (!cleanSingleLine || cleanSingleLine.length < 3) {
+            camStatusText.textContent = "⚠️ Yazı Net Seçilemedi";
+            camSubStatus.textContent = "Lütfen kamerayı 'İçindekiler' yazısına yaklaştırıp parlama olmadan tekrar çekin.";
+            camResultsContainer.innerHTML = `
+              <div class="ocr-readonly-box">
+                <strong>📷 Kameranın Okuduğu Metin:</strong> (Net harf seçilemedi)
+              </div>
+            `;
             return;
           }
 
-          const lowerText = rawText.toLocaleLowerCase("tr-TR");
+          const normText = normalizeTR(cleanSingleLine);
+          const compactText = buildCompactEcodeText(normText);
 
           // 1) Kara Liste Markası Kontrolü
-          const caughtBrands = KARA_LISTE_MARKALARI.filter(b => lowerText.includes(b));
+          const caughtBrands = KARA_LISTE_MARKALARI.filter(brand =>
+            isKeyMatched(normText, compactText, brand)
+          );
 
           // 2) Kara Liste Maddesi Kontrolü
           const caughtIngredients = KARA_LISTE_MADDELERI.filter(item =>
-            item.keys.some(k => lowerText.includes(k))
+            item.keys.some(k => isKeyMatched(normText, compactText, k))
           );
 
           camStatusText.textContent = "✅ Kontrol Tamamlandı";
@@ -3146,10 +3298,22 @@
             html += `
               <div class="info-box box-right">
                 <span class="box-label" style="color:var(--primary);">✅ KARA LİSTE BULUNMADI</span>
-                Okunan etikette kayıtlı bir <strong>Kara Liste Markası</strong> veya <strong>Kara Liste Maddesi</strong> tespit edilmedi.
+                Okunan metinde kayıtlı bir <strong>Kara Liste Markası</strong> veya <strong>Kara Liste Maddesi</strong> tespit edilmedi.
               </div>
             `;
           }
+
+          // En altta değiştirilemeyen (sabit) okunan metin bilgisi
+          const safeReadText = cleanSingleLine
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+          html += `
+            <div class="ocr-readonly-box">
+              <strong>📷 Kameranın Seçebildiği Metin:</strong> ${safeReadText}
+            </div>
+          `;
 
           camResultsContainer.innerHTML = html;
         } catch (err) {
