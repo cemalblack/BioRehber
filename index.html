@@ -3250,7 +3250,7 @@
       }
 
       async function analyzeImageWithGemini(base64Jpeg, apiKey) {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
         const promptText = `Bu gıda paketini/etiketini incele ve SADECE aşağıdaki JSON formatında yanıt ver:
 {
   "urunAdi": "Tespit edilen marka ve ürün adı (yoksa boş bırak)",
