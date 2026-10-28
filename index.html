@@ -2884,9 +2884,9 @@
     renderChips();
     renderMain();
   </script>
- <!-- =====================================================================
+<!-- =====================================================================
        ÇOKLU VERİTABANLI BARKOD & KAREKOD KARA LİSTE TARAYICI MODÜLÜ
-       (1: OpenFoodFacts | 2: OpenProductsFacts & Brocade | 3: GS1 Firma Kodu)
+       (Paralel 4 Veritabanı + GS1 Firma Kodu + "İçermez/Free" Yanlış Alarm Koruması)
        ===================================================================== -->
   <style>
     .search-bar {
@@ -2978,7 +2978,7 @@
           <img id="camPreviewImg" class="cam-preview-img" src="" alt="Barkod" />
           <div style="flex:1;">
             <div id="camStatusText" class="cam-status-text">Barkod / Karekod Taranıyor...</div>
-            <div id="camSubStatus" class="cam-sub-status">Çoklu veritabanı ve GS1 firma kodu kontrol edilir.</div>
+            <div id="camSubStatus" class="cam-sub-status">Tüm veritabanları ve GS1 firma kodu kontrol edilir.</div>
           </div>
         </div>
         <div id="camResultsContainer"></div>
@@ -3013,7 +3013,7 @@
       // 3. KARA LİSTE MADDELERİ
       const KARA_LISTE_MADDELERI = [
         {
-          keys: ["palm", "hurma yagi", "palm-oil"],
+          keys: ["palm", "hurma yagi", "palm-oil", "palmiye yagi"],
           name: "Rafine Palm Yağı",
           desc: "Yüksek ısıda işlenirken DNA ve böbrek toksini olan '3-MCPD ve Glisidil Esterleri' üretir."
         },
@@ -3115,8 +3115,19 @@
           .replace(/[çÇ]/g, "c");
       }
 
-      // Hızlı Zaman Aşımlı Fetch Yardımcısı (Yedek sunucu yavaşsa ekranı bekletmez)
-      async function fetchWithTimeout(url, timeoutMs = 3200) {
+      // "İçermez / Yoktur / Free" İfadelerini Temizleyen Yanlış Alarm Kalkanı
+      function stripNegatedPhrases(normStr) {
+        return (normStr || "")
+          .replace(/palm[\s-]*oil[\s-]*free/g, " ")
+          .replace(/palm[\s-]*oil[\s-]*content[\s-]*unknown/g, " ")
+          .replace(/sans[\s-]*huile[\s-]*de[\s-]*palme/g, " ")
+          .replace(/ohne[\s-]*palmol/g, " ")
+          .replace(/(palm yagi|hurma yagi|palmiye yagi|glukoz surubu|glikoz surubu|fruktoz surubu|misir surubu|trans yag|margarin|msg|monosodyum glutamat|aspartam|koruyucu|katki maddesi|renklendirici)(\s*,\s*|\s+ve\s+|\s+veya\s+|\s+)*(icermez|yoktur|bulunmaz|kullanilmamistir)/g, " ")
+          .replace(/[^.,;:()\n]{1,50}\b(icermez|yoktur|bulunmaz|kullanilmamistir)\b/g, " ");
+      }
+
+      // Hızlı Zaman Aşımlı Fetch Yardımcısı
+      async function fetchWithTimeout(url, timeoutMs = 3400) {
         const ctrl = new AbortController();
         const timer = setTimeout(() => ctrl.abort(), timeoutMs);
         try {
@@ -3163,72 +3174,93 @@
         return null;
       }
 
-      // ÇOKLU VERİTABANI ZİNCİRİ (OpenFoodFacts -> TR -> OpenProductsFacts -> Brocade)
+      // ÇOKLU VERİTABANI PARALEL SORGUSU (Hepsine aynı anda bakar, en geniş veriyi birleştirir)
       async function fetchMultiDatabaseDetails(barcode) {
-        let merged = {
-          brand: "",
-          name: "",
-          ingr: "",
-          additives: "",
-          analysisTags: "",
-          sourcesUsed: []
-        };
+        const code = encodeURIComponent(barcode);
 
-        // 1. OpenFoodFacts Ailesi (Global, TR ve Genel Ürünler Veritabanı)
         const offEndpoints = [
-          { name: "OpenFoodFacts", url: `https://world.openfoodfacts.org/api/v0/product/${encodeURIComponent(barcode)}.json` },
-          { name: "OpenProductsFacts", url: `https://world.openproductsfacts.org/api/v0/product/${encodeURIComponent(barcode)}.json` },
-          { name: "OpenFoodFacts-TR", url: `https://tr.openfoodfacts.org/api/v0/product/${encodeURIComponent(barcode)}.json` }
+          { name: "OpenFoodFacts", url: `https://world.openfoodfacts.org/api/v0/product/${code}.json` },
+          { name: "OpenFoodFacts-TR", url: `https://tr.openfoodfacts.org/api/v0/product/${code}.json` },
+          { name: "OpenProductsFacts", url: `https://world.openproductsfacts.org/api/v0/product/${code}.json` }
         ];
 
-        for (const ep of offEndpoints) {
-          const res = await fetchWithTimeout(ep.url, 3200);
-          if (res && res.ok) {
-            const data = await res.json().catch(() => null);
-            if (data && data.status === 1 && data.product) {
-              const p = data.product;
-              const b = (p.brands || "").trim();
-              const n = (p.product_name_tr || p.product_name || p.generic_name_tr || p.generic_name || "").trim();
-              const i = (p.ingredients_text_tr || p.ingredients_text || p.ingredients_text_en || "").trim();
-              const add = Array.isArray(p.additives_tags) ? p.additives_tags.map(t => t.replace(/^[a-z]+:/, "")).join(", ") : "";
-              const ana = Array.isArray(p.ingredients_analysis_tags) ? p.ingredients_analysis_tags.map(t => t.replace(/^[a-z]+:/, "")).join(", ") : "";
+        const offPromises = offEndpoints.map(async ep => {
+          const res = await fetchWithTimeout(ep.url, 3400);
+          if (!res || !res.ok) return null;
+          const data = await res.json().catch(() => null);
+          if (data && data.status === 1 && data.product) {
+            const p = data.product;
+            // SADECE kesin olarak "en:palm-oil" (Palm yağı içerir) etiketini al; "palm-oil-free" ve "unknown" etiketlerini eler!
+            const confirmedPalmTag = Array.isArray(p.ingredients_analysis_tags) &&
+              p.ingredients_analysis_tags.includes("en:palm-oil")
+                ? ["palm-oil"]
+                : [];
 
-              if (b || n || i || add) {
-                merged.sourcesUsed.push(ep.name);
-                if (!merged.brand && b) merged.brand = b;
-                if (!merged.name && n) merged.name = n;
-                if (!merged.ingr && i) merged.ingr = i;
-                if (!merged.additives && add) merged.additives = add;
-                if (!merged.analysisTags && ana) merged.analysisTags = ana;
-              }
-              // Eğer hem ürün adı hem içindekiler tam bulunduysa diğer yedekleri beklemeye gerek yok
-              if (merged.brand && merged.name && merged.ingr) break;
-            }
+            return {
+              source: ep.name,
+              brand: (p.brands || "").trim(),
+              name: (p.product_name_tr || p.product_name || p.generic_name_tr || p.generic_name || "").trim(),
+              ingr: (p.ingredients_text_tr || p.ingredients_text || p.ingredients_text_en || "").trim(),
+              additives: Array.isArray(p.additives_tags) ? p.additives_tags.map(t => t.replace(/^[a-z]+:/, "")) : [],
+              analysis: confirmedPalmTag
+            };
           }
-        }
+          return null;
+        });
 
-        // 2. Yedek Küresel Barkod Kataloğu (Brocade.io - Eğer hâlâ marka/ürün adı bulunamadıysa)
-        if (!merged.brand && !merged.name) {
-          const brocadeRes = await fetchWithTimeout(`https://www.brocade.io/api/items/${encodeURIComponent(barcode)}`, 2800);
-          if (brocadeRes && brocadeRes.ok) {
-            const bData = await brocadeRes.json().catch(() => null);
-            if (bData && (bData.name || bData.brand_name)) {
-              merged.sourcesUsed.push("Brocade EAN Kataloğu");
-              merged.brand = (bData.brand_name || "").trim();
-              merged.name = (bData.name || "").trim();
-            }
+        const brocadePromise = (async () => {
+          const res = await fetchWithTimeout(`https://www.brocade.io/api/items/${code}`, 2800);
+          if (!res || !res.ok) return null;
+          const bData = await res.json().catch(() => null);
+          if (bData && (bData.name || bData.brand_name)) {
+            return {
+              source: "Brocade EAN",
+              brand: (bData.brand_name || "").trim(),
+              name: (bData.name || "").trim(),
+              ingr: "",
+              additives: [],
+              analysis: []
+            };
           }
-        }
+          return null;
+        })();
 
-        if (merged.sourcesUsed.length === 0) return null;
+        const results = (await Promise.all([...offPromises, brocadePromise])).filter(Boolean);
+        if (results.length === 0) return null;
+
+        let bestBrand = "";
+        let bestName = "";
+        let bestIngr = "";
+        const allAdditives = new Set();
+        const allAnalysis = new Set();
+        const allBrandAndNames = [];
+        const allIngrTexts = [];
+        const sourcesUsed = [];
+
+        results.forEach(r => {
+          if (r.brand || r.name || r.ingr || r.additives.length > 0) {
+            sourcesUsed.push(r.source);
+            if (r.brand.length > bestBrand.length) bestBrand = r.brand;
+            if (r.name.length > bestName.length) bestName = r.name;
+            if (r.ingr.length > bestIngr.length) bestIngr = r.ingr;
+            r.additives.forEach(a => allAdditives.add(a));
+            r.analysis.forEach(an => allAnalysis.add(an));
+            if (r.brand) allBrandAndNames.push(r.brand);
+            if (r.name) allBrandAndNames.push(r.name);
+            if (r.ingr) allIngrTexts.push(r.ingr);
+          }
+        });
+
+        if (sourcesUsed.length === 0) return null;
 
         return {
-          brand: merged.brand || "Belirtilmemiş",
-          name: merged.name || "Ürün Adı Kayıtlı Değil",
-          ingr: merged.ingr,
-          additives: merged.additives,
-          sources: merged.sourcesUsed.join(" + "),
-          combinedSearch: `${merged.brand} ${merged.name} ${merged.ingr} ${merged.additives} ${merged.analysisTags}`.trim()
+          brand: bestBrand || "Belirtilmemiş",
+          name: bestName || "Ürün Adı Kayıtlı Değil",
+          ingr: bestIngr,
+          additives: Array.from(allAdditives).join(", "),
+          sources: Array.from(new Set(sourcesUsed)).join(" + "),
+          brandSearchText: allBrandAndNames.join(" ").trim(),
+          ingredientSearchText: [...allIngrTexts, ...Array.from(allAdditives), ...Array.from(allAnalysis)].join(" ").trim()
         };
       }
 
@@ -3270,47 +3302,48 @@
           const codeVal = detected.value;
           const isQR = detected.format === "qr_code";
           camStatusText.textContent = `📌 ${isQR ? "Karekod" : "Barkod"} Okundu: ${codeVal}`;
-          camSubStatus.textContent = "Veritabanları ve GS1 firma kodu sorgulanıyor...";
+          camSubStatus.textContent = "Tüm veritabanları aynı anda sorgulanıyor...";
 
           const numMatch = codeVal.match(/\b(\d{8}|\d{12,14})\b/);
           const barcodeToQuery = !isQR ? codeVal : (numMatch ? numMatch[1] : null);
 
-          // 1. GS1 Firma Öneki Kontrolü (İnternetsiz bile çalışır)
+          // 1. GS1 Firma Öneki Kontrolü
           const prefixCaughtBrands = checkGs1Prefix(barcodeToQuery);
 
-          // 2. Çoklu Veritabanı Sorgusu
+          // 2. Paralel Çoklu Veritabanı Sorgusu
           let dbInfo = null;
           if (barcodeToQuery) {
             dbInfo = await fetchMultiDatabaseDetails(barcodeToQuery);
           }
 
-          // Eğer veritabanlarında hiç yok ve GS1 kara liste öneki de değilse:
           if (!isQR && !dbInfo && prefixCaughtBrands.length === 0) {
             camStatusText.textContent = `📌 Barkod: ${codeVal}`;
             camSubStatus.textContent = "Taranan 4 veritabanında kayıt bulunamadı.";
             camResultsContainer.innerHTML = `
               <div class="barcode-detail-box">
                 <strong>📦 Barkod Numarası:</strong> ${codeVal}<br>
-                <span style="color:var(--text-muted);">Bu yerel ürün açık veritabanlarında (OpenFoodFacts, OpenProductsFacts, Brocade) kayıtlı değil; ancak GS1 barkod başlangıç kodu bilinen Kara Liste tekelleriyle eşleşmedi.</span>
+                <span style="color:var(--text-muted);">Bu yerel ürün açık veritabanlarında kayıtlı değil; ayrıca GS1 barkod başlangıç kodu bilinen Kara Liste tekelleriyle eşleşmedi.</span>
               </div>
             `;
             fileInput.value = "";
             return;
           }
 
-          const textToAnalyze = dbInfo ? dbInfo.combinedSearch : codeVal;
-          const compareText = cleanNorm(textToAnalyze);
+          // Marka araması ve İçindekiler araması ("içermez/free" temizliği uygulanarak)
+          const rawBrandText = dbInfo ? `${dbInfo.brandSearchText} ${dbInfo.ingredientSearchText}` : codeVal;
+          const rawIngrText = dbInfo ? dbInfo.ingredientSearchText : codeVal;
 
-          // İsimden Yakalanan Markalar + Barkod Önekinden Yakalanan Markalar
+          const compareBrandText = cleanNorm(rawBrandText);
+          const compareIngrText = stripNegatedPhrases(cleanNorm(rawIngrText));
+
           const nameCaughtBrands = KARA_LISTE_MARKALARI
-            .filter(b => compareText.includes(cleanNorm(b)))
+            .filter(b => compareBrandText.includes(cleanNorm(b)))
             .map(b => b.toUpperCase());
 
           const allCaughtBrands = Array.from(new Set([...prefixCaughtBrands, ...nameCaughtBrands]));
 
-          // Yakalanan Kara Liste Maddeleri
           const caughtIngredients = KARA_LISTE_MADDELERI.filter(item =>
-            item.keys.some(k => compareText.includes(cleanNorm(k)))
+            item.keys.some(k => compareIngrText.includes(cleanNorm(k)))
           );
 
           camStatusText.textContent = dbInfo
@@ -3371,4 +3404,5 @@
   </script>
 </body>
 </html>
-
+<!-- === KODUN SONU (EKSİKSİZ TAMAMLANDI) === -->
+       
