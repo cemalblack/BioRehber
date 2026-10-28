@@ -1062,11 +1062,11 @@
         rankedSources: ["dogal_kakao", "sekersiz_findik_ezmesi"]
       },
       {
-        name: "Likopen & Lutein",
+        name: "Kapsantin, Likopen & Lutein",
         group: "Özel Moleküller",
-        role: "Lutein gözün sarı noktasını mavi ışıktan korur; Likopen ise damar plaklarını ve prostat büyümesini önler.",
-        tip: "Lutein emilimi yumurta sarısı ve zeytinyağlı pazıda; Likopen emilimi ise pişmiş domates sosu ve közlenmiş kapya biberde zirvededir.",
-        rankedSources: ["yumurta", "pazi_ispanak", "kapya_biber", "kavanoz_bakliyat_sebze", "domates_salatalik", "patlican_kabak_bamya"]
+        role: "Lutein gözün sarı noktasını mavi ışıktan korur; Kapya biberdeki Kapsantin ve domatesteki Likopen ise hücre zarlarını, damar duvarını ve prostatı oksidasyondan korur.",
+        tip: "Lutein emilimi yumurta sarısı ve zeytinyağlı pazıda; Kapsantin emilimi pişmiş/közlenmiş kapya biberde; Likopen emilimi ise kışın sera domatesi yerine yemek/tavuk sosunda zeytinyağıyla ısıtılan 1 yemek kaşığı domates salçasında zirvededir.",
+        rankedSources: ["yumurta", "pazi_ispanak", "kapya_biber", "domates_salatalik", "kavanoz_bakliyat_sebze", "patlican_kabak_bamya"]
       },
       {
         name: "Nasunin",
@@ -1124,15 +1124,15 @@
         category: "Sebze",
         tier: 1,
         score: 98,
-        portion: "Günde 1 orta boy çiğ (130g)",
-        surprise: "1 orta boy çiğ kapya biber günlük C vitamini ihtiyacının %200'ünden fazlasını (~190 mg) tek başına karşılar. Portakaldan 3 kat güçlüdür, şekeri düşüktür ve soyma zahmeti yoktur.",
+        portion: "Günde 1-2 orta boy (Çiğ + Yemek içinde)",
+        surprise: "1 orta boy çiğ kapya biber günlük C vitamini ihtiyacının %200'ünden fazlasını (~190 mg) tek başına karşılar. Portakaldan 3 kat güçlüdür, şekeri düşüktür. Kırmızı rengini likopenden değil, damar ve hücre zarını koruyan güçlü 'Kapsantin' karotenoidinden alır.",
         selection: "Etli, sert ve parlak koyu kırmızı olanları seç. Ortadan kes, çekirdeğini silkele ve 10 saniyede kahvaltıda peynirin/yumurtanın yanında ye.",
         constraintNote: "6 kriterin tamamını (alışkanlık, hacim, fiyat, soyma pratikliği ve sıfır yan etki) tam puanla geçer.",
-        multiplierBadge: "3x - 5x Karotenoid & Bitkisel Demir Emilimi",
-        rightMethod: "C vitamini ve bitkisel demir emilimini 4 kat artırmak için yemeklerin/kahvaltının yanında ÇİĞ tüket. Likopen ve Beta-karoten için ise KÖZLENMİŞ/PİŞMİŞ tüket (ısı hücre duvarını kırar). Mutlaka aynı öğünde zeytinyağı, peynir veya yumurta (yağ) olsun.",
+        multiplierBadge: "3x - 5x Kapsantin, Lutein & Bitkisel Demir Emilimi",
+        rightMethod: "1) ÇİĞ (SOĞUK) TÜKETİM: Isıya duyarlı C vitaminini sıfır kayıpla almak ve bitkisel demir emilimini 4 kat artırmak için bir kısmını ÇİĞ tüket.\n2) ISITARAK (PİŞMİŞ) TÜKETİM: Hücre duvarında kilitli olan Kapsantin, Lutein ve Beta-Karoten (A vitamini) emilimini 4 katına çıkarmak için bir kısmını yemek/tavuk içinde zeytinyağıyla PİŞMİŞ veya KÖZLENMİŞ tüket.\n3) KIŞLIK LİKOPEN NOTU: Kapya biberde likopen yoktur; kışın sera domatesi yerine yemek veya tavuk sosunda kullanılan 1 yemek kaşığı Domates Salçası (ısı + zeytinyağı ile) günlük aktif likopen ihtiyacını fazlasıyla karşılar.",
         wrongMethod: "Tamamen yağsız/tek başına yemek (yağda çözünen karotenoidlerin %90'ı emilmeden atılır).",
         storage: "Buzdolabı sebzelik gözünde kağıt havluya sarılı olarak 1-2 hafta taze kalır.",
-        molecules: ["C Vitamini", "Likopen & Lutein", "A Vitamini (Retinol & Beta-Karoten)", "Kuersetin"],
+        molecules: ["C Vitamini", "Kapsantin, Likopen & Lutein", "A Vitamini (Retinol & Beta-Karoten)", "Kuersetin"],
         systems: ["Bağışıklık & Senolitik", "Damar & Kolajen", "Göz & Retina"]
       },
       {
@@ -2885,8 +2885,8 @@
     renderMain();
   </script>
   <!-- =====================================================================
-       KARA LİSTE MADDESİ VE MARKASI TARAYICI (BARKOD + SAF YÜKSEK NETLİKLİ OCR)
-       (Yapay zekasız, şifresiz, dış yönlendirmesiz, kendi kendine yeten modül)
+       SADECE BARKOD VE KAREKOD (QR) KARA LİSTE TARAYICI MODÜLÜ
+       (OCR / Harf okuma kaldırıldı; sadece Barkod ve Karekod okur)
        ===================================================================== -->
   <style>
     .search-bar {
@@ -2951,27 +2951,23 @@
       color: var(--text-muted);
       margin-top: 3px;
     }
-    .ocr-readonly-box {
-      margin-top: 12px;
-      padding: 9px 11px;
-      border-radius: 9px;
+    .barcode-detail-box {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
       background: var(--bg-card-alt);
       border: 1px solid var(--border);
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      max-height: 95px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
-      user-select: none;
+      font-size: 0.8rem;
+      color: var(--text);
+      line-height: 1.45;
     }
   </style>
 
-  <!-- Kara Liste Sonuç Modalı -->
+  <!-- Barkod & Karekod Sonuç Modalı -->
   <div class="modal-overlay" id="cameraModal">
     <div class="modal-sheet">
       <div class="modal-header">
-        <h3>🚫 Kara Liste Maddesi ve Markası</h3>
+        <h3>🚫 Barkod & Karekod Kontrolü</h3>
         <div style="display:flex; gap:8px;">
           <button class="icon-btn" id="retakeCamBtn" style="color:var(--primary);">📷 Tekrar Çek</button>
           <button class="icon-btn" id="closeCamModalBtn">Kapat ✕</button>
@@ -2979,10 +2975,10 @@
       </div>
       <div class="modal-body">
         <div class="cam-preview-wrap">
-          <img id="camPreviewImg" class="cam-preview-img" src="" alt="Etiket" />
+          <img id="camPreviewImg" class="cam-preview-img" src="" alt="Barkod" />
           <div style="flex:1;">
-            <div id="camStatusText" class="cam-status-text">Etiket Taranıyor...</div>
-            <div id="camSubStatus" class="cam-sub-status">Önce barkod, ardından etiket yazıları kontrol ediliyor.</div>
+            <div id="camStatusText" class="cam-status-text">Barkod / Karekod Taranıyor...</div>
+            <div id="camSubStatus" class="cam-sub-status">Sadece barkod ve karekod kontrol edilir.</div>
           </div>
         </div>
         <div id="camResultsContainer"></div>
@@ -2992,65 +2988,43 @@
 
   <script>
     (function() {
-      /***********************************************************************
-       * 🛠️ 1. KARA LİSTE MARKALARI VE MADDELERİ (KOLAY EKLEME BÖLÜMÜ)
-       * İleride yeni bir marka veya katkı maddesi eklemek istediğinde
-       * aşağıdaki listelere virgülle yeni bir satır eklemen yeterlidir.
-       ***********************************************************************/
-
-      // A) KARA LİSTE MARKALARI
+      // 1. KARA LİSTE MARKALARI
       const KARA_LISTE_MARKALARI = [
-        "nutella",
-        "çokokrem",
-        "sarelle",
-        "fiskobirlik nuga",
-        "danone",
-        "danette",
-        "knorr",
-        "maggi",
-        "pringles",
-        "doritos",
-        "ruffles",
-        "cheetos",
-        "lays",
-        "coca cola",
-        "pepsi",
-        "fanta",
-        "nesquik",
-        "calve",
-        "becel",
-        "sana"
+        "nutella", "çokokrem", "sarelle", "fiskobirlik nuga",
+        "danone", "danette", "knorr", "maggi", "pringles",
+        "doritos", "ruffles", "cheetos", "lays", "coca cola",
+        "pepsi", "fanta", "nesquik", "calve", "becel", "sana"
       ];
 
-      // B) KARA LİSTE MADDELERİ
+      // 2. KARA LİSTE MADDELERİ (Hem Türkçe hem uluslararası etiket kodlarıyla)
       const KARA_LISTE_MADDELERI = [
         {
-          keys: ["palm", "hurma yağı"],
+          keys: ["palm", "hurma yagi", "palm-oil"],
           name: "Rafine Palm Yağı",
           desc: "Yüksek ısıda işlenirken DNA ve böbrek toksini olan '3-MCPD ve Glisidil Esterleri' üretir."
         },
         {
-          keys: ["e250", "e 250", "e-250", "sodyum nitrit", "nitrit", "e251", "sodyum nitrat"],
+          keys: ["e250", "e-250", "sodyum nitrit", "nitrit", "e251", "sodyum nitrat"],
           name: "Sodyum Nitrit / Nitrat (E250)",
           desc: "İşlenmiş et koruyucusudur; midede kolon kanseri tetikleyicisi 'N-Nitrozaminlere' dönüşür."
         },
         {
-          keys: ["eritme tuzu", "eritme tuzları", "polifosfat", "difosfat", "fosfat", "e452", "e450", "e339"],
+          keys: ["eritme tuzu", "eritme tuzlari", "polifosfat", "difosfat", "fosfat", "e452", "e450", "e339"],
           name: "Eritme / Fosfat Tuzları",
           desc: "Gerçek peynir değildir; inorganik fosfatlar damarları kireçlendirir ve kemiklerden kalsiyum çalar."
         },
         {
-          keys: ["glukoz şurubu", "fruktoz şurubu", "mısır şurubu", "invert şeker", "glikoz şurubu"],
+          keys: ["glukoz surubu", "fruktoz surubu", "misir surubu", "invert seker", "glikoz surubu", "glucose-syrup"],
           name: "Glukoz / Fruktoz / Mısır Şurubu",
           desc: "Doğrudan karaciğer yağlanması, ürik asit artışı ve şiddetli insülin direnci yapar."
         },
         {
-          keys: ["maltodekstrin", "modifiye nişasta"],
+          keys: ["maltodekstrin", "maltodextrin", "modifiye nisasta"],
           name: "Maltodekstrin / Modifiye Nişasta",
           desc: "Glisemik indeksi beyaz şekerden bile yüksektir (GI: 110); kan şekerini hızla patlatır."
         },
         {
-          keys: ["monosodyum glutamat", "glutamat", "e621", "e 621", "çin tuzu", "maya ekstraktı"],
+          keys: ["monosodyum glutamat", "glutamat", "e621", "cin tuzu", "maya ekstrakti"],
           name: "MSG (E621 / Çin Tuzu)",
           desc: "Beynin tokluk merkezini yanıltarak aşırı yeme tetikler."
         },
@@ -3060,7 +3034,7 @@
           desc: "Yeşil zeytini kostikle karartıp simsiyah göstermek için kullanılan kimyasal boyadır."
         },
         {
-          keys: ["alkalize", "potasyum karbonat"],
+          keys: ["alkalize", "potasyum karbonat", "e501"],
           name: "Alkalize İşlem (Kakao Kaybı)",
           desc: "Kakaonun rengini koyulaştırırken içindeki damar açıcı flavanollerin %75'ini yok eder."
         },
@@ -3070,29 +3044,27 @@
           desc: "Kıvam artırıcıdır; bağırsak duvarında iltihap ve şişkinlik tetikleyebilir."
         },
         {
-          keys: ["aspartam", "asesülfam", "sukraloz", "maltitol", "sorbitol", "e950", "e951", "e955"],
+          keys: ["aspartam", "asesulfam", "sukraloz", "maltitol", "sorbitol", "e950", "e951", "e955"],
           name: "Yapay Tatlandırıcı / Şeker Alkolü",
           desc: "Bağırsak mikrobiyotasını bozar ve gaz/şişkinlik yapar."
         },
         {
-          keys: ["margarin", "hidrojene", "trans yağ"],
+          keys: ["margarin", "hidrojene", "trans yag"],
           name: "Hidrojene / Trans Yağ / Margarin",
           desc: "Damar iç yüzeyini (endotel) doğrudan yaralayan sentetik katı yağ."
         },
         {
-          keys: ["sodyum benzoat", "potasyum sorbat", "e211", "e202", "kükürt dioksit", "e220"],
+          keys: ["sodyum benzoat", "potasyum sorbat", "e211", "e202", "kukurt dioksit", "e220"],
           name: "Sentetik Koruyucu (E211 / E202 / E220)",
           desc: "Bağırsak dostu bakterilere zarar veren kimyasal koruyucu."
         }
       ];
 
-      /***********************************************************************
-       * ⚙️ 2. BUTON YERLEŞİMİ VE TARAMA SİSTEMİ (BARKOD -> VERİTABANI -> OCR)
-       ***********************************************************************/
+      // 3. ARAYÜZ ELEMANLARI
       const searchBar = document.querySelector(".search-bar");
       const scanBtn = document.createElement("button");
       scanBtn.className = "label-scan-btn";
-      scanBtn.title = "Kara Liste Maddesi ve Markası Kontrolü";
+      scanBtn.title = "Barkod ve Karekod Kontrolü";
       scanBtn.innerHTML = "Etiket 📷";
 
       const fileInput = document.createElement("input");
@@ -3117,7 +3089,6 @@
         if (e.target === cameraModal) cameraModal.classList.remove("open");
       });
 
-      // Paketlerdeki BÜYÜK HARF (I/İ, Ş/S, Ğ/G vb.) farklarını sade şekilde eşitler
       function cleanNorm(str) {
         return (str || "")
           .toLowerCase()
@@ -3130,88 +3101,65 @@
           .replace(/[çÇ]/g, "c");
       }
 
-      function loadTesseractScript() {
-        return new Promise((resolve, reject) => {
-          if (window.Tesseract) return resolve(window.Tesseract);
-          const s = document.createElement("script");
-          s.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
-          s.onload = () => resolve(window.Tesseract);
-          s.onerror = reject;
-          document.head.appendChild(s);
+      // SADECE BARKOD VE KAREKOD OKUYUCU
+      async function detectCodeFromFile(file) {
+        if (!("BarcodeDetector" in window)) {
+          throw new Error("Cihaz tarayıcısında yerleşik Barkod/Karekod okuyucu kapalı.");
+        }
+        const detector = new window.BarcodeDetector({
+          formats: ["ean_13", "ean_8", "upc_a", "upc_e", "qr_code", "code_128", "code_39"]
         });
-      }
 
-      // ADIM 1: Görüntüde Barkod Var mı Kontrol Et
-      async function tryDetectBarcode(file) {
-        if (!("BarcodeDetector" in window)) return null;
-        try {
-          const bitmap = await createImageBitmap(file);
-          const detector = new window.BarcodeDetector({
-            formats: ["ean_13", "ean_8", "upc_a", "upc_e"]
-          });
-          const codes = await detector.detect(bitmap);
-          if (codes && codes.length > 0 && codes[0].rawValue) {
-            return codes[0].rawValue.trim();
-          }
-        } catch (_) {}
+        const bitmap = await createImageBitmap(file);
+        let codes = await detector.detect(bitmap);
+        if (codes && codes.length > 0 && codes[0].rawValue) {
+          return { value: codes[0].rawValue.trim(), format: codes[0].format || "barkod" };
+        }
+
+        // Yüksek çözünürlüklü fotoğrafta ilk denemede bulamazsa boyutlandırıp tekrar dene
+        const canvas = document.createElement("canvas");
+        const maxDim = 1200;
+        let w = bitmap.width;
+        let h = bitmap.height;
+        if (w > maxDim || h > maxDim) {
+          const s = maxDim / Math.max(w, h);
+          w = Math.round(w * s);
+          h = Math.round(h * s);
+        }
+        canvas.width = w;
+        canvas.height = h;
+        canvas.getContext("2d").drawImage(bitmap, 0, 0, w, h);
+        codes = await detector.detect(canvas);
+        if (codes && codes.length > 0 && codes[0].rawValue) {
+          return { value: codes[0].rawValue.trim(), format: codes[0].format || "barkod" };
+        }
         return null;
       }
 
-      // ADIM 2: Barkod Varsa Açık Gıda Veritabanından (OpenFoodFacts) Bilgileri Çek
-      async function fetchProductByBarcode(barcode) {
+      // VERİTABANI SORGUSU (Hem içindekileri hem de gizli E-kodu/Palm etiketlerini çeker)
+      async function fetchBarcodeDetails(barcode) {
         try {
           const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${encodeURIComponent(barcode)}.json`);
           if (!res.ok) return null;
           const data = await res.json();
           if (data && data.status === 1 && data.product) {
             const p = data.product;
-            const brand = p.brands || "";
-            const name = p.product_name_tr || p.product_name || "";
-            const ingr = p.ingredients_text_tr || p.ingredients_text || "";
-            const combined = `${brand} ${name} ${ingr}`.trim();
-            if (combined.length >= 2) {
-              return {
-                title: `${brand} ${name}`.trim() || `Barkod: ${barcode}`,
-                fullText: combined,
-                hasIngredients: ingr.trim().length > 3
-              };
-            }
+            const brand = (p.brands || "").trim();
+            const name = (p.product_name_tr || p.product_name || "").trim();
+            const ingr = (p.ingredients_text_tr || p.ingredients_text || p.ingredients_text_en || "").trim();
+            const additives = Array.isArray(p.additives_tags) ? p.additives_tags.map(t => t.replace(/^[a-z]+:/, "")).join(", ") : "";
+            const analysisTags = Array.isArray(p.ingredients_analysis_tags) ? p.ingredients_analysis_tags.map(t => t.replace(/^[a-z]+:/, "")).join(", ") : "";
+
+            return {
+              brand: brand || "Belirtilmemiş",
+              name: name || "Ürün Adı Kayıtlı Değil",
+              ingr: ingr,
+              additives: additives,
+              combinedSearch: `${brand} ${name} ${ingr} ${additives} ${analysisTags}`.trim()
+            };
           }
         } catch (_) {}
         return null;
-      }
-
-      // ADIM 3: Kendi İmkanlarıyla Yüksek Netlikli Saf OCR Yazı Okuma
-      async function runCleanOCR(file) {
-        let rawText = "";
-
-        // A) Telefonda yerleşik donanım metin okuyucu (TextDetector) varsa önce onu dene
-        if ("TextDetector" in window) {
-          try {
-            const bitmap = await createImageBitmap(file);
-            const detector = new window.TextDetector();
-            const blocks = await detector.detect(bitmap);
-            if (blocks && blocks.length > 0) {
-              rawText = blocks.map(b => b.rawValue).join(" ");
-            }
-          } catch (_) {}
-        }
-
-        // B) Fotoğrafı hiç bozmadan orijinal netliğiyle Tesseract OCR'a okut
-        if (!rawText || rawText.trim().length < 3) {
-          const Tesseract = await loadTesseractScript();
-          const result = await Tesseract.recognize(file, "tur+eng", {
-            logger: m => {
-              if (m.status === "recognizing text") {
-                const pct = Math.round((m.progress || 0) * 100);
-                camStatusText.textContent = `🔍 Etiket Yazıları Okunuyor... (%${pct})`;
-              }
-            }
-          });
-          rawText = (result.data && result.data.text) ? result.data.text : "";
-        }
-
-        return rawText.replace(/\s+/g, " ").trim();
       }
 
       fileInput.addEventListener("change", async e => {
@@ -3222,116 +3170,98 @@
         camPreviewImg.src = imgUrl;
         camPreviewImg.style.display = "block";
         camResultsContainer.innerHTML = "";
-        camStatusText.textContent = "⏳ Kontrol Başlatıldı...";
-        camSubStatus.textContent = "Önce barkod, yoksa etiket yazıları taranıyor...";
+        camStatusText.textContent = "⏳ Barkod / Karekod Okunuyor...";
+        camSubStatus.textContent = "Görüntüdeki kod taranıyor...";
         cameraModal.classList.add("open");
 
         try {
-          let finalReadText = "";
-          let sourceLabel = "📷 Okunan Etiket Metni";
+          const detected = await detectCodeFromFile(file);
 
-          // 1. Önce Barkod Kontrolü
-          const barcode = await tryDetectBarcode(file);
-          if (barcode) {
-            camStatusText.textContent = `📌 Barkod Okundu (${barcode})...`;
-            camSubStatus.textContent = "Gıda veritabanından içerik kontrol ediliyor...";
-            const dbProduct = await fetchProductByBarcode(barcode);
-
-            if (dbProduct) {
-              finalReadText = dbProduct.fullText;
-              sourceLabel = `📦 Barkod Veritabanı (${barcode})`;
-
-              // Eğer veritabanında sadece ürün adı var ama içindekiler listesi boşsa, fotoğraftaki yazıyı da oku ve birleştir
-              if (!dbProduct.hasIngredients) {
-                const extraOcr = await runCleanOCR(file);
-                if (extraOcr) finalReadText += " " + extraOcr;
-              }
-            }
-          }
-
-          // 2. Barkod yoksa veya veritabanında bulunamadıysa doğrudan kendi OCR motorumuzla oku
-          if (!finalReadText || finalReadText.length < 3) {
-            camStatusText.textContent = "🔍 Etiket Yazıları Okunuyor...";
-            camSubStatus.textContent = "Fotoğraf orijinal netliğiyle taranıyor, lütfen bekleyin.";
-            finalReadText = await runCleanOCR(file);
-            if (barcode) {
-              sourceLabel = `📷 Barkod (${barcode}) Veritabanında Yok • OCR İle Okunan Metin`;
-            }
-          }
-
-          if (!finalReadText || finalReadText.length < 3) {
-            camStatusText.textContent = "⚠️ Net Yazı veya Barkod Seçilemedi";
-            camSubStatus.textContent = "Lütfen kamerayı etikete biraz daha yaklaştırıp parlama olmadan tekrar çekin.";
-            camResultsContainer.innerHTML = `
-              <div class="ocr-readonly-box">
-                <strong>${sourceLabel}:</strong> (Net harf seçilemedi)
-              </div>
-            `;
+          if (!detected) {
+            camStatusText.textContent = "⚠️ Barkod veya Karekod Görünmedi";
+            camSubStatus.textContent = "Lütfen kamerayı sadece çizgili barkoda veya karekoda yaklaştırıp net çekin.";
+            fileInput.value = "";
             return;
           }
 
-          const compareText = cleanNorm(finalReadText);
+          const codeVal = detected.value;
+          const isQR = detected.format === "qr_code";
+          camStatusText.textContent = `📌 ${isQR ? "Karekod" : "Barkod"} Okundu: ${codeVal}`;
+          camSubStatus.textContent = "Veritabanı ve kara liste kontrol ediliyor...";
 
-          // Kara Liste Markası Kontrolü
-          const caughtBrands = KARA_LISTE_MARKALARI.filter(brand =>
-            compareText.includes(cleanNorm(brand))
-          );
+          let dbInfo = null;
+          const numMatch = codeVal.match(/\b(\d{8}|\d{12,14})\b/);
+          const barcodeToQuery = !isQR ? codeVal : (numMatch ? numMatch[1] : null);
 
-          // Kara Liste Maddesi Kontrolü
+          if (barcodeToQuery) {
+            dbInfo = await fetchBarcodeDetails(barcodeToQuery);
+          }
+
+          if (!isQR && !dbInfo) {
+            camStatusText.textContent = `📌 Barkod: ${codeVal}`;
+            camSubStatus.textContent = "Bu barkod açık gıda veritabanında kayıtlı değil.";
+            camResultsContainer.innerHTML = `
+              <div class="barcode-detail-box">
+                <strong>📦 Barkod Numarası:</strong> ${codeVal}<br>
+                <span style="color:var(--text-muted);">Bu yerel ürünün içerik bilgisi uluslararası açık gıda veritabanına henüz girilmemiştir.</span>
+              </div>
+            `;
+            fileInput.value = "";
+            return;
+          }
+
+          const textToAnalyze = dbInfo ? dbInfo.combinedSearch : codeVal;
+          const compareText = cleanNorm(textToAnalyze);
+
+          const caughtBrands = KARA_LISTE_MARKALARI.filter(b => compareText.includes(cleanNorm(b)));
           const caughtIngredients = KARA_LISTE_MADDELERI.filter(item =>
             item.keys.some(k => compareText.includes(cleanNorm(k)))
           );
 
-          camStatusText.textContent = "✅ Kontrol Tamamlandı";
-          camSubStatus.textContent = "Kara liste tarama sonucu aşağıdadır:";
+          camStatusText.textContent = dbInfo ? `📦 ${dbInfo.brand} - ${dbInfo.name}` : "✅ Karekod Kontrol Edildi";
+          camSubStatus.textContent = "Kara liste sonucu aşağıdadır:";
 
           let html = "";
 
           if (caughtBrands.length > 0 || caughtIngredients.length > 0) {
             html += `<div class="info-box box-wrong">`;
             html += `<span class="box-label" style="color:var(--danger);">🚫 KIRMIZI ALARM: KARA LİSTE YAKALANDI!</span>`;
-
             if (caughtBrands.length > 0) {
-              html += `
-                <div style="margin-top:6px; padding-bottom:6px; border-bottom:1px dashed rgba(239,68,68,0.3);">
-                  <strong style="color:var(--danger);">❌ Yasaklı Marka:</strong> ${caughtBrands.map(b => b.toUpperCase()).join(", ")}
-                </div>
-              `;
+              html += `<div style="margin-top:6px;"><strong>❌ Yasaklı Marka:</strong> ${caughtBrands.map(b => b.toUpperCase()).join(", ")}</div>`;
             }
-
             caughtIngredients.forEach(item => {
-              html += `
-                <div style="margin-top:6px; padding-top:4px;">
-                  <strong style="color:var(--danger);">❌ ${item.name}:</strong> ${item.desc}
-                </div>
-              `;
+              html += `<div style="margin-top:6px;"><strong>❌ ${item.name}:</strong> ${item.desc}</div>`;
             });
-
             html += `</div>`;
           } else {
             html += `
               <div class="info-box box-right">
                 <span class="box-label" style="color:var(--primary);">✅ KARA LİSTE BULUNMADI</span>
-                Okunan bilgide kayıtlı bir <strong>Kara Liste Markası</strong> veya <strong>Kara Liste Maddesi</strong> tespit edilmedi.
+                Kayıtlı veride yasaklı marka veya katkı maddesi tespit edilmedi.
               </div>
             `;
           }
 
-          const safeReadText = finalReadText
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
-
-          html += `
-            <div class="ocr-readonly-box">
-              <strong>${sourceLabel}:</strong> ${safeReadText}
-            </div>
-          `;
+          if (dbInfo) {
+            html += `
+              <div class="barcode-detail-box">
+                <div><strong>🏷️ Marka / Ürün:</strong> ${dbInfo.brand} — ${dbInfo.name}</div>
+                <div style="margin-top:4px;"><strong>📋 İçindekiler:</strong> ${dbInfo.ingr ? dbInfo.ingr : "<span style='color:var(--accent);'>Veritabanında sadece ürün adı kayıtlı, içindekiler listesi girilmemiş.</span>"}</div>
+                ${dbInfo.additives ? `<div style="margin-top:4px;"><strong>🧪 Kayıtlı Katkı Kodları:</strong> ${dbInfo.additives.toUpperCase()}</div>` : ""}
+              </div>
+            `;
+          } else {
+            html += `
+              <div class="barcode-detail-box">
+                <strong>🔲 Karekod İçeriği:</strong> ${codeVal.replace(/</g, "&lt;")}
+              </div>
+            `;
+          }
 
           camResultsContainer.innerHTML = html;
         } catch (err) {
-          camStatusText.textContent = "❌ Okuma Hatası Oluştu";
-          camSubStatus.textContent = "Lütfen tekrar çekmeyi deneyin.";
+          camStatusText.textContent = "❌ Okuma Yapılamadı";
+          camSubStatus.textContent = err.message || "Lütfen tekrar deneyin.";
         }
 
         fileInput.value = "";
@@ -3340,3 +3270,4 @@
   </script>
 </body>
 </html>
+
