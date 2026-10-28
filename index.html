@@ -2884,9 +2884,9 @@
     renderChips();
     renderMain();
   </script>
-  <!-- =====================================================================
-       SADECE BARKOD VE KAREKOD (QR) KARA LİSTE TARAYICI MODÜLÜ
-       (OCR / Harf okuma kaldırıldı; sadece Barkod ve Karekod okur)
+ <!-- =====================================================================
+       ÇOKLU VERİTABANLI BARKOD & KAREKOD KARA LİSTE TARAYICI MODÜLÜ
+       (1: OpenFoodFacts | 2: OpenProductsFacts & Brocade | 3: GS1 Firma Kodu)
        ===================================================================== -->
   <style>
     .search-bar {
@@ -2978,7 +2978,7 @@
           <img id="camPreviewImg" class="cam-preview-img" src="" alt="Barkod" />
           <div style="flex:1;">
             <div id="camStatusText" class="cam-status-text">Barkod / Karekod Taranıyor...</div>
-            <div id="camSubStatus" class="cam-sub-status">Sadece barkod ve karekod kontrol edilir.</div>
+            <div id="camSubStatus" class="cam-sub-status">Çoklu veritabanı ve GS1 firma kodu kontrol edilir.</div>
           </div>
         </div>
         <div id="camResultsContainer"></div>
@@ -2988,15 +2988,29 @@
 
   <script>
     (function() {
-      // 1. KARA LİSTE MARKALARI
+      // 1. KARA LİSTE MARKALARI (İsimden Eşleşenler)
       const KARA_LISTE_MARKALARI = [
-        "nutella", "çokokrem", "sarelle", "fiskobirlik nuga",
+        "nutella", "ferrero", "çokokrem", "sarelle", "fiskobirlik nuga",
         "danone", "danette", "knorr", "maggi", "pringles",
-        "doritos", "ruffles", "cheetos", "lays", "coca cola",
-        "pepsi", "fanta", "nesquik", "calve", "becel", "sana"
+        "doritos", "ruffles", "cheetos", "lays", "lay's", "frito lay", "frito-lay",
+        "coca cola", "coca-cola", "pepsi", "fanta", "nesquik", "calve", "becel", "sana"
       ];
 
-      // 2. KARA LİSTE MADDELERİ (Hem Türkçe hem uluslararası etiket kodlarıyla)
+      // 2. GS1 BARKOD FİRMA ÖNEKLERİ (İnternette Kayıtlı Olmasa Bile İlk Hanelerden Yakalar)
+      const KARA_LISTE_BARKOD_ONEKLERI = [
+        { prefixes: ["8690637", "303349"], brandName: "DANONE / DANETTE (Danone Gıda)" },
+        { prefixes: ["8000500", "4008400", "8697435"], brandName: "NUTELLA / FERRERO" },
+        { prefixes: ["8690624"], brandName: "DORITOS / RUFFLES / LAY'S / CHEETOS (Frito-Lay)" },
+        { prefixes: ["8690641"], brandName: "PEPSI / FRITO-LAY (PepsiCo)" },
+        { prefixes: ["5449000", "8690627"], brandName: "COCA-COLA / FANTA" },
+        { prefixes: ["8690635", "8711200", "8712100", "8714100"], brandName: "KNORR / CALVE / BECEL / SANA (Unilever)" },
+        { prefixes: ["8690632", "761303"], brandName: "NESQUIK / MAGGI (Nestlé)" },
+        { prefixes: ["5053990"], brandName: "PRINGLES" },
+        { prefixes: ["8690717"], brandName: "SARELLE (Sanset Gıda)" },
+        { prefixes: ["8690804"], brandName: "FİSKOBİRLİK NUGA" }
+      ];
+
+      // 3. KARA LİSTE MADDELERİ
       const KARA_LISTE_MADDELERI = [
         {
           keys: ["palm", "hurma yagi", "palm-oil"],
@@ -3014,17 +3028,17 @@
           desc: "Gerçek peynir değildir; inorganik fosfatlar damarları kireçlendirir ve kemiklerden kalsiyum çalar."
         },
         {
-          keys: ["glukoz surubu", "fruktoz surubu", "misir surubu", "invert seker", "glikoz surubu", "glucose-syrup"],
+          keys: ["glukoz surubu", "fruktoz surubu", "misir surubu", "invert seker", "glikoz surubu", "glucose-syrup", "fructose-syrup"],
           name: "Glukoz / Fruktoz / Mısır Şurubu",
           desc: "Doğrudan karaciğer yağlanması, ürik asit artışı ve şiddetli insülin direnci yapar."
         },
         {
-          keys: ["maltodekstrin", "maltodextrin", "modifiye nisasta"],
+          keys: ["maltodekstrin", "maltodextrin", "modifiye nisasta", "modified-starch"],
           name: "Maltodekstrin / Modifiye Nişasta",
           desc: "Glisemik indeksi beyaz şekerden bile yüksektir (GI: 110); kan şekerini hızla patlatır."
         },
         {
-          keys: ["monosodyum glutamat", "glutamat", "e621", "cin tuzu", "maya ekstrakti"],
+          keys: ["monosodyum glutamat", "glutamat", "e621", "cin tuzu", "maya ekstrakti", "yeast-extract"],
           name: "MSG (E621 / Çin Tuzu)",
           desc: "Beynin tokluk merkezini yanıltarak aşırı yeme tetikler."
         },
@@ -3039,7 +3053,7 @@
           desc: "Kakaonun rengini koyulaştırırken içindeki damar açıcı flavanollerin %75'ini yok eder."
         },
         {
-          keys: ["karragenan", "karagenan", "e407"],
+          keys: ["karragenan", "karagenan", "carrageenan", "e407"],
           name: "Karragenan (E407)",
           desc: "Kıvam artırıcıdır; bağırsak duvarında iltihap ve şişkinlik tetikleyebilir."
         },
@@ -3049,7 +3063,7 @@
           desc: "Bağırsak mikrobiyotasını bozar ve gaz/şişkinlik yapar."
         },
         {
-          keys: ["margarin", "hidrojene", "trans yag"],
+          keys: ["margarin", "hidrojene", "trans yag", "hydrogenated"],
           name: "Hidrojene / Trans Yağ / Margarin",
           desc: "Damar iç yüzeyini (endotel) doğrudan yaralayan sentetik katı yağ."
         },
@@ -3060,7 +3074,7 @@
         }
       ];
 
-      // 3. ARAYÜZ ELEMANLARI
+      // 4. ARAYÜZ ELEMANLARI
       const searchBar = document.querySelector(".search-bar");
       const scanBtn = document.createElement("button");
       scanBtn.className = "label-scan-btn";
@@ -3101,6 +3115,20 @@
           .replace(/[çÇ]/g, "c");
       }
 
+      // Hızlı Zaman Aşımlı Fetch Yardımcısı (Yedek sunucu yavaşsa ekranı bekletmez)
+      async function fetchWithTimeout(url, timeoutMs = 3200) {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+        try {
+          const res = await fetch(url, { signal: ctrl.signal });
+          clearTimeout(timer);
+          return res;
+        } catch (err) {
+          clearTimeout(timer);
+          return null;
+        }
+      }
+
       // SADECE BARKOD VE KAREKOD OKUYUCU
       async function detectCodeFromFile(file) {
         if (!("BarcodeDetector" in window)) {
@@ -3116,7 +3144,6 @@
           return { value: codes[0].rawValue.trim(), format: codes[0].format || "barkod" };
         }
 
-        // Yüksek çözünürlüklü fotoğrafta ilk denemede bulamazsa boyutlandırıp tekrar dene
         const canvas = document.createElement("canvas");
         const maxDim = 1200;
         let w = bitmap.width;
@@ -3136,30 +3163,86 @@
         return null;
       }
 
-      // VERİTABANI SORGUSU (Hem içindekileri hem de gizli E-kodu/Palm etiketlerini çeker)
-      async function fetchBarcodeDetails(barcode) {
-        try {
-          const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${encodeURIComponent(barcode)}.json`);
-          if (!res.ok) return null;
-          const data = await res.json();
-          if (data && data.status === 1 && data.product) {
-            const p = data.product;
-            const brand = (p.brands || "").trim();
-            const name = (p.product_name_tr || p.product_name || "").trim();
-            const ingr = (p.ingredients_text_tr || p.ingredients_text || p.ingredients_text_en || "").trim();
-            const additives = Array.isArray(p.additives_tags) ? p.additives_tags.map(t => t.replace(/^[a-z]+:/, "")).join(", ") : "";
-            const analysisTags = Array.isArray(p.ingredients_analysis_tags) ? p.ingredients_analysis_tags.map(t => t.replace(/^[a-z]+:/, "")).join(", ") : "";
+      // ÇOKLU VERİTABANI ZİNCİRİ (OpenFoodFacts -> TR -> OpenProductsFacts -> Brocade)
+      async function fetchMultiDatabaseDetails(barcode) {
+        let merged = {
+          brand: "",
+          name: "",
+          ingr: "",
+          additives: "",
+          analysisTags: "",
+          sourcesUsed: []
+        };
 
-            return {
-              brand: brand || "Belirtilmemiş",
-              name: name || "Ürün Adı Kayıtlı Değil",
-              ingr: ingr,
-              additives: additives,
-              combinedSearch: `${brand} ${name} ${ingr} ${additives} ${analysisTags}`.trim()
-            };
+        // 1. OpenFoodFacts Ailesi (Global, TR ve Genel Ürünler Veritabanı)
+        const offEndpoints = [
+          { name: "OpenFoodFacts", url: `https://world.openfoodfacts.org/api/v0/product/${encodeURIComponent(barcode)}.json` },
+          { name: "OpenProductsFacts", url: `https://world.openproductsfacts.org/api/v0/product/${encodeURIComponent(barcode)}.json` },
+          { name: "OpenFoodFacts-TR", url: `https://tr.openfoodfacts.org/api/v0/product/${encodeURIComponent(barcode)}.json` }
+        ];
+
+        for (const ep of offEndpoints) {
+          const res = await fetchWithTimeout(ep.url, 3200);
+          if (res && res.ok) {
+            const data = await res.json().catch(() => null);
+            if (data && data.status === 1 && data.product) {
+              const p = data.product;
+              const b = (p.brands || "").trim();
+              const n = (p.product_name_tr || p.product_name || p.generic_name_tr || p.generic_name || "").trim();
+              const i = (p.ingredients_text_tr || p.ingredients_text || p.ingredients_text_en || "").trim();
+              const add = Array.isArray(p.additives_tags) ? p.additives_tags.map(t => t.replace(/^[a-z]+:/, "")).join(", ") : "";
+              const ana = Array.isArray(p.ingredients_analysis_tags) ? p.ingredients_analysis_tags.map(t => t.replace(/^[a-z]+:/, "")).join(", ") : "";
+
+              if (b || n || i || add) {
+                merged.sourcesUsed.push(ep.name);
+                if (!merged.brand && b) merged.brand = b;
+                if (!merged.name && n) merged.name = n;
+                if (!merged.ingr && i) merged.ingr = i;
+                if (!merged.additives && add) merged.additives = add;
+                if (!merged.analysisTags && ana) merged.analysisTags = ana;
+              }
+              // Eğer hem ürün adı hem içindekiler tam bulunduysa diğer yedekleri beklemeye gerek yok
+              if (merged.brand && merged.name && merged.ingr) break;
+            }
           }
-        } catch (_) {}
-        return null;
+        }
+
+        // 2. Yedek Küresel Barkod Kataloğu (Brocade.io - Eğer hâlâ marka/ürün adı bulunamadıysa)
+        if (!merged.brand && !merged.name) {
+          const brocadeRes = await fetchWithTimeout(`https://www.brocade.io/api/items/${encodeURIComponent(barcode)}`, 2800);
+          if (brocadeRes && brocadeRes.ok) {
+            const bData = await brocadeRes.json().catch(() => null);
+            if (bData && (bData.name || bData.brand_name)) {
+              merged.sourcesUsed.push("Brocade EAN Kataloğu");
+              merged.brand = (bData.brand_name || "").trim();
+              merged.name = (bData.name || "").trim();
+            }
+          }
+        }
+
+        if (merged.sourcesUsed.length === 0) return null;
+
+        return {
+          brand: merged.brand || "Belirtilmemiş",
+          name: merged.name || "Ürün Adı Kayıtlı Değil",
+          ingr: merged.ingr,
+          additives: merged.additives,
+          sources: merged.sourcesUsed.join(" + "),
+          combinedSearch: `${merged.brand} ${merged.name} ${merged.ingr} ${merged.additives} ${merged.analysisTags}`.trim()
+        };
+      }
+
+      // GS1 Barkod İlk 7-8 Hane Firma Kodu Kontrolü
+      function checkGs1Prefix(barcode) {
+        if (!barcode) return [];
+        const cleanCode = barcode.replace(/\D/g, "");
+        const matched = [];
+        KARA_LISTE_BARKOD_ONEKLERI.forEach(entry => {
+          if (entry.prefixes.some(pref => cleanCode.startsWith(pref))) {
+            matched.push(entry.brandName);
+          }
+        });
+        return matched;
       }
 
       fileInput.addEventListener("change", async e => {
@@ -3187,23 +3270,28 @@
           const codeVal = detected.value;
           const isQR = detected.format === "qr_code";
           camStatusText.textContent = `📌 ${isQR ? "Karekod" : "Barkod"} Okundu: ${codeVal}`;
-          camSubStatus.textContent = "Veritabanı ve kara liste kontrol ediliyor...";
+          camSubStatus.textContent = "Veritabanları ve GS1 firma kodu sorgulanıyor...";
 
-          let dbInfo = null;
           const numMatch = codeVal.match(/\b(\d{8}|\d{12,14})\b/);
           const barcodeToQuery = !isQR ? codeVal : (numMatch ? numMatch[1] : null);
 
+          // 1. GS1 Firma Öneki Kontrolü (İnternetsiz bile çalışır)
+          const prefixCaughtBrands = checkGs1Prefix(barcodeToQuery);
+
+          // 2. Çoklu Veritabanı Sorgusu
+          let dbInfo = null;
           if (barcodeToQuery) {
-            dbInfo = await fetchBarcodeDetails(barcodeToQuery);
+            dbInfo = await fetchMultiDatabaseDetails(barcodeToQuery);
           }
 
-          if (!isQR && !dbInfo) {
+          // Eğer veritabanlarında hiç yok ve GS1 kara liste öneki de değilse:
+          if (!isQR && !dbInfo && prefixCaughtBrands.length === 0) {
             camStatusText.textContent = `📌 Barkod: ${codeVal}`;
-            camSubStatus.textContent = "Bu barkod açık gıda veritabanında kayıtlı değil.";
+            camSubStatus.textContent = "Taranan 4 veritabanında kayıt bulunamadı.";
             camResultsContainer.innerHTML = `
               <div class="barcode-detail-box">
                 <strong>📦 Barkod Numarası:</strong> ${codeVal}<br>
-                <span style="color:var(--text-muted);">Bu yerel ürünün içerik bilgisi uluslararası açık gıda veritabanına henüz girilmemiştir.</span>
+                <span style="color:var(--text-muted);">Bu yerel ürün açık veritabanlarında (OpenFoodFacts, OpenProductsFacts, Brocade) kayıtlı değil; ancak GS1 barkod başlangıç kodu bilinen Kara Liste tekelleriyle eşleşmedi.</span>
               </div>
             `;
             fileInput.value = "";
@@ -3213,21 +3301,32 @@
           const textToAnalyze = dbInfo ? dbInfo.combinedSearch : codeVal;
           const compareText = cleanNorm(textToAnalyze);
 
-          const caughtBrands = KARA_LISTE_MARKALARI.filter(b => compareText.includes(cleanNorm(b)));
+          // İsimden Yakalanan Markalar + Barkod Önekinden Yakalanan Markalar
+          const nameCaughtBrands = KARA_LISTE_MARKALARI
+            .filter(b => compareText.includes(cleanNorm(b)))
+            .map(b => b.toUpperCase());
+
+          const allCaughtBrands = Array.from(new Set([...prefixCaughtBrands, ...nameCaughtBrands]));
+
+          // Yakalanan Kara Liste Maddeleri
           const caughtIngredients = KARA_LISTE_MADDELERI.filter(item =>
             item.keys.some(k => compareText.includes(cleanNorm(k)))
           );
 
-          camStatusText.textContent = dbInfo ? `📦 ${dbInfo.brand} - ${dbInfo.name}` : "✅ Karekod Kontrol Edildi";
-          camSubStatus.textContent = "Kara liste sonucu aşağıdadır:";
+          camStatusText.textContent = dbInfo
+            ? `📦 ${dbInfo.brand} - ${dbInfo.name}`
+            : (prefixCaughtBrands.length > 0 ? `📦 ${prefixCaughtBrands[0]}` : "✅ Kod Kontrol Edildi");
+          camSubStatus.textContent = dbInfo
+            ? `Kaynak: ${dbInfo.sources}`
+            : "GS1 Barkod Firma Kodu & Kara Liste Sonucu:";
 
           let html = "";
 
-          if (caughtBrands.length > 0 || caughtIngredients.length > 0) {
+          if (allCaughtBrands.length > 0 || caughtIngredients.length > 0) {
             html += `<div class="info-box box-wrong">`;
             html += `<span class="box-label" style="color:var(--danger);">🚫 KIRMIZI ALARM: KARA LİSTE YAKALANDI!</span>`;
-            if (caughtBrands.length > 0) {
-              html += `<div style="margin-top:6px;"><strong>❌ Yasaklı Marka:</strong> ${caughtBrands.map(b => b.toUpperCase()).join(", ")}</div>`;
+            if (allCaughtBrands.length > 0) {
+              html += `<div style="margin-top:6px;"><strong>❌ Yasaklı Marka / Üretici:</strong> ${allCaughtBrands.join(", ")}</div>`;
             }
             caughtIngredients.forEach(item => {
               html += `<div style="margin-top:6px;"><strong>❌ ${item.name}:</strong> ${item.desc}</div>`;
@@ -3246,14 +3345,16 @@
             html += `
               <div class="barcode-detail-box">
                 <div><strong>🏷️ Marka / Ürün:</strong> ${dbInfo.brand} — ${dbInfo.name}</div>
-                <div style="margin-top:4px;"><strong>📋 İçindekiler:</strong> ${dbInfo.ingr ? dbInfo.ingr : "<span style='color:var(--accent);'>Veritabanında sadece ürün adı kayıtlı, içindekiler listesi girilmemiş.</span>"}</div>
+                <div style="margin-top:4px;"><strong>📋 İçindekiler:</strong> ${dbInfo.ingr ? dbInfo.ingr : "<span style='color:var(--accent);'>Veritabanlarında sadece ürün/marka adı kayıtlı, içindekiler listesi girilmemiş.</span>"}</div>
                 ${dbInfo.additives ? `<div style="margin-top:4px;"><strong>🧪 Kayıtlı Katkı Kodları:</strong> ${dbInfo.additives.toUpperCase()}</div>` : ""}
+                <div style="margin-top:4px; font-size:0.73rem; color:var(--text-muted);">🌐 Bulunan Veritabanı: ${dbInfo.sources} (Barkod: ${codeVal})</div>
               </div>
             `;
           } else {
             html += `
               <div class="barcode-detail-box">
-                <strong>🔲 Karekod İçeriği:</strong> ${codeVal.replace(/</g, "&lt;")}
+                <strong>📦 Barkod / Kod:</strong> ${codeVal.replace(/</g, "&lt;")}<br>
+                <span style="color:var(--text-muted);">Ürün adı açık veritabanlarında yer almıyor ancak barkodun ilk hanelerinden (GS1 Firma Kodu) üreticisi tespit edildi.</span>
               </div>
             `;
           }
